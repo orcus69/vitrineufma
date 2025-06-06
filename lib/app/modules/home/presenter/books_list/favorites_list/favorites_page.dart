@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:vitrine_ufma/app/core/components/book_card.dart';
 import 'package:vitrine_ufma/app/core/components/footer.dart';
 import 'package:vitrine_ufma/app/core/components/text.dart';
 import 'package:vitrine_ufma/app/core/constants/colors.dart';
@@ -58,255 +59,69 @@ class _FavoritesListPageState extends State<FavoritesListPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
-    return Scaffold(
-      backgroundColor: AppColors.backgroundGrey,
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SearchModal(expanded: false,),
-                  _backButton(),
-                  // LISTA DE MATERIAIS
-                  Observer(builder: (context) {
-                    if (store.loading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-                    if (favoriteListIndex == null ||
-                        store.readingList.isEmpty) {
-                      return Container(
-                        height: height * 0.3,
-                        child: const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AppText(
-                                text: 'Nenhuma lista de favoritos encontrada',
-                                fontSize: AppFontSize.fz06,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 70,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: Container(
-                                  padding: const EdgeInsets.only(bottom: 20),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: const AppText(
-                                    fontWeight: 'bold',
-                                    fontSize: AppFontSize.fz07,
-                                    text: 'Sua lista de favoritos',
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: AppColors.cutGrey, width: 0.5),
-                                ),
-                                // Use um SizedBox para definir a altura
-                                child: SizedBox(
-                                  height: 400,
-                                  child: ListView.builder(
-                                    itemCount: store.listBooks.length,
-                                    itemBuilder: (context, index) {
-                                      var book = store.listBooks[index];
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10.0),
-                                        child: InkWell(
-                                          onTap: () {
-                                            // store.setSelectedBook(book);
-                                            Modular.to.pushNamed('/home/books/${book.id}',);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: AppColors.lightGrey),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            padding: const EdgeInsets.all(10),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                // Imagem do livro
-                                                Container(
-                                                  height: 150,
-                                                  width: 100,
-                                                  child: Image.network(
-                                                    book.coverImage,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder: (context,
-                                                        error, stackTrace) {
-                                                      return Center(
-                                                        child:
-                                                            Icon(Icons.error),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 20),
-                                                // Detalhes do livro
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 400,
-                                                        child: AppText(
-                                                          text: book.title,
-                                                          fontWeight: 'bold',
-                                                          fontSize:
-                                                              AppFontSize.fz07,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                      SizedBox(
-                                                        width: 200,
-                                                        child: AppText(
-                                                          text: book.author
-                                                                  .isNotEmpty
-                                                              ? book.author
-                                                                          .length >
-                                                                      1
-                                                                  ? 'de ${book.author[0]} e outros'
-                                                                  : 'de ${book.author[0]}'
-                                                              : 'Autor desconhecido',
-                                                          fontSize:
-                                                              AppFontSize.fz06,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                    ],
-                                                  ),
-                                                ),
-                                                // Botão de excluir
-                                                IconButton(
-                                                  icon: Icon(Icons.delete,
-                                                      color:
-                                                          AppColors.lightGrey),
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              '${book.title}'),
-                                                          content: Text(
-                                                              'Você deseja remover este item da lista?'),
-                                                          actions: <Widget>[
-                                                            TextButton(
-                                                              style: TextButton
-                                                                  .styleFrom(
-                                                                foregroundColor:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                              child: Text(
-                                                                  'Cancelar'),
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                            ),
-                                                            TextButton(
-                                                              style: TextButton
-                                                                  .styleFrom(
-                                                                foregroundColor:
-                                                                    Colors.red,
-                                                              ),
-                                                              child: const Text(
-                                                                  'Remover'),
-                                                              onPressed:
-                                                                  () async {
-                                                                try {
-                                                                  await store
-                                                                      .removeItemFromList(
-                                                                    id: book.id,
-                                                                    idList: store
-                                                                            .readingList[
-                                                                        favoriteListIndex ??
-                                                                            0]['id'],
-                                                                  );
-                                                                  if (mounted) {
-                                                                    setState(
-                                                                        () {
-                                                                      store
-                                                                          .listBooks
-                                                                          .removeAt(
-                                                                              index);
-                                                                    });
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  }
-                                                                } catch (e) {
-                                                                  debugPrint(
-                                                                      'Erro ao remover item: $e');
-                                                                }
-                                                              },
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  }),
-                  const SizedBox(
-                    height: 50,
-                  ), // FOOTER
-                  const FooterVitrine(),
-                ],
-              ),
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: AppColors.white,
+    body: CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child:  SearchModal(expanded: false)),
+        SliverToBoxAdapter(child: _backButton()),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 70, right: 70, bottom: 20),
+            child: const AppText(
+              fontWeight: 'bold',
+              fontSize: AppFontSize.fz07,
+              text: 'Sua lista de favoritos',
+              textAlign: TextAlign.left,
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        Observer(builder: (_) {
+          if (store.loading) {
+            return const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (favoriteListIndex == null || store.readingList.isEmpty) {
+            return const SliverFillRemaining(
+              child: Center(
+                child: AppText(
+                  text: 'Nenhuma lista de favoritos encontrada',
+                  fontSize: AppFontSize.fz06,
+                ),
+              ),
+            );
+          }
+
+          return SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 70),
+            sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return BookCard(book: store.listBooks[index]);
+                },
+                childCount: store.listBooks.length,
+              ),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 20,
+                mainAxisExtent: 265,
+                mainAxisSpacing: 20,
+                childAspectRatio: 0.65,
+              ),
+            ),
+          );
+        }),
+        const SliverToBoxAdapter(child: SizedBox(height: 50)),
+        const SliverToBoxAdapter(child: FooterVitrine()),
+      ],
+    ),
+  );
+}
+
 
   Widget _backButton() {
     return Padding(

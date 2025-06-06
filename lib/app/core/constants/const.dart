@@ -10,6 +10,7 @@ class AppConst {
   }
   static const String appName = "Vitrine UFMA";
   static const double imageH = 18;
+  static const String API_URL = "http://localhost:8000";
 
   static double sidePadding = 20;
   static double sideWindowWidth = 450;

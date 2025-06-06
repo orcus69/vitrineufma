@@ -41,11 +41,12 @@ abstract class _SearchStoreBase with Store {
   //METODOS DE BUSCA
   @action
   Future<void> searchWithFilters() async {
-
-    Modular.to.pushNamed('result/${searchController.text}');
+    search(searchController.text);
+    
+    // Modular.to.pushNamed('./result/${searchController.text}');
   
     booksFiltered.clear();
-    search(searchController.text);
+    
   }
 
   @action
@@ -69,6 +70,8 @@ abstract class _SearchStoreBase with Store {
       showSnackbarError(l.message);
     }, (r) {
       booksFiltered = List<Book>.of(r);
+
+      Modular.to.pushNamed('./result/${searchController.text}', arguments: booksFiltered);
     });
 
     loading = false;

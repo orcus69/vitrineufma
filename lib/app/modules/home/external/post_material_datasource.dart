@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:vitrine_ufma/app/core/constants/const.dart';
 import 'package:vitrine_ufma/app/core/errors/failures.dart';
 import 'package:vitrine_ufma/app/core/service/client/i_client_http.dart';
 import 'package:vitrine_ufma/app/core/service/local_storage/i_local_storage.dart';
@@ -23,7 +24,7 @@ class PostMaterialDatasource implements IIPostMaterialDatasource {
 
     try {
       final result = await clientHttp
-          .post('http://localhost:8000/informational-material', {
+          .post('${AppConst.API_URL}/informational-material', {
         "title": data['title'],
         "author": data['author'],
         "publication_year": data['publication_year'],
@@ -82,7 +83,7 @@ class PostMaterialDatasource implements IIPostMaterialDatasource {
       "file": data['file'],
     }));
     try {
-      final result = await clientHttp.post('http://localhost:8000/books', {
+      final result = await clientHttp.post('${AppConst.API_URL}/books', {
         "title": data['title'],
         "author": data['author'],
         "publication_year": data['publication_year'],
@@ -124,6 +125,7 @@ class PostMaterialDatasource implements IIPostMaterialDatasource {
           .putBlob(Uint8List.fromList(imagePath));
       return await storage.ref('images/$uniqueId$fileName').getDownloadURL();
     } on FirebaseException {
+      debugPrint('FirebaseException: Failed to upload image');
       rethrow; // Re-throw the FirebaseException
     } catch (e) {
       throw Exception(

@@ -26,11 +26,11 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // You can directly get the store instance inside the callback
       await widget.store.loadbooks(); // Carrega as coleções
-      // await widget.store.getMostAccessedMaterials(10);
-      // widget.store.fetchRelatedBooks('Literatura');
-      // widget.store.fetchRelatedBooks('Ficção');
-      // widget.store.fetchRelatedBooks('Romance');
-      // widget.store.fetchRelatedBooks('Ciências');
+      await widget.store.getMostAccessedMaterials(10);
+      widget.store.fetchRelatedBooks('Literatura');
+      widget.store.fetchRelatedBooks('Ficção');
+      widget.store.fetchRelatedBooks('Romance');
+      widget.store.fetchRelatedBooks('Ciências');
     });
   }
 

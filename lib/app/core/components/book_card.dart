@@ -24,7 +24,8 @@ class BookCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
           ),
-          Padding(
+          Container(
+      constraints: const BoxConstraints(maxWidth: 150),
             padding: const EdgeInsets.all(10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -68,7 +69,7 @@ class BookCard extends StatelessWidget {
                   text: book.title,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
-                  maxLines: 4,
+                  maxLines: 2,
                 ),
                 const SizedBox(height: 2),
                 TextWidget(
@@ -80,7 +81,6 @@ class BookCard extends StatelessWidget {
             ),
           ),
 
-          //Imagem do livro
         ],
       ),
     );

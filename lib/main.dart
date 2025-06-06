@@ -1,17 +1,19 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:vitrine_ufma/app/core/utils/functions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:vitrine_ufma/firebase_options.dart';
 import 'app/app_module.dart';
 import 'app/app_widget.dart';
 
 void main() async {
   initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
   if (!UniversalPlatform.isWeb) {
     var path = await getApplicationSupportDirectory();
     Hive.init(

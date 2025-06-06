@@ -64,6 +64,7 @@ class _DetailPageState extends State<DetailPage> {
       
 
       book = store.book;
+      // _rating = 
     });
   }
 
@@ -768,7 +769,7 @@ class _DetailPageState extends State<DetailPage> {
                           children: [
                             SizedBox(width: 70),
                             AppText(
-                              text: 'Materiais mais acessados',
+                              text: 'Materiais relacionados',
                               fontSize: 20,
                               fontWeight: 'bold',
                             ),
@@ -780,7 +781,7 @@ class _DetailPageState extends State<DetailPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 70),
                           child: GridView.builder(
                             shrinkWrap: true,
-                            itemCount: store.mostAccessedMaterials.length,
+                            itemCount: store.relatedBooks.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisSpacing: 12,

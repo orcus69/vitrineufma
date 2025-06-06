@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:vitrine_ufma/app/core/constants/const.dart';
 import 'package:vitrine_ufma/app/core/errors/failures.dart';
 import 'package:vitrine_ufma/app/core/service/client/i_client_http.dart';
 import 'package:vitrine_ufma/app/core/service/local_storage/i_local_storage.dart';
@@ -21,7 +22,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
   Future<List> getInfoMaterial() async {
     try {
       final result = await clientHttp.get(
-        'http://infomatviewerapi.onrender.com/informational-material',
+        '${AppConst.API_URL}/informational-material',
       );
       var response = result.data;
       if (result.statusCode == 200) {
@@ -63,10 +64,14 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
       }
       print(jsonEncode(query));
       final result = await clientHttp.post(
-        'http://infomatviewerapi.onrender.com/informational-material/search/with-boolean-operators',
+        '${AppConst.API_URL}/informational-material/search/with-boolean-operators',
         query ?? _query,
       );
       var response = result.data;
+
+      if(response.isEmpty){
+        throw DataSourceError(message: 'Nenhum material encontrado');
+      }
       if (result.statusCode == 200) {
         debugPrint('response $response');
         return List<Book>.from(
@@ -83,7 +88,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
   Future<BasicMaterialInfo> getBasicMaterialInfo({required int bookId}) async {
     try {
       final result = await clientHttp.get(
-        'http://infomatviewerapi.onrender.com/informational-material/$bookId',
+        '${AppConst.API_URL}/informational-material/$bookId',
       );
       var response = result.data;
       if (result.statusCode == 200) {
@@ -116,7 +121,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
       };
 
       final result = await clientHttp.post(
-          'http://infomatviewerapi.onrender.com/informational-material/search/with-boolean-operators',
+          '${AppConst.API_URL}/informational-material/search/with-boolean-operators',
           query,
           headers: {'Authorization': 'Bearer $authorization'});
 
@@ -139,7 +144,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
   Future<List> getMostAccessedMaterials(int limit) async {
     try {
       final result = await clientHttp.get(
-        'http://infomatviewerapi.onrender.com/informational-material-most-accessed',
+        '${AppConst.API_URL}/informational-material-most-accessed',
       );
       var response = result.data;
       if (result.statusCode == 200) {
@@ -171,7 +176,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     try {
       print('tags $tags');
       final result =
-          await clientHttp.put('http://infomatviewerapi.onrender.com/informational-material', {
+          await clientHttp.put('${AppConst.API_URL}/informational-material', {
         "id": bookId,
         "attrs": {"tags": tags}
       }, headers: {
@@ -197,7 +202,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.delete(
-          'http://infomatviewerapi.onrender.com/informational-material',
+          '${AppConst.API_URL}/informational-material',
           queryParameters: {
             'info_mat_id': id
           },
@@ -221,7 +226,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     Map boxData = iLstorage.getKeyData(boxKey: 'data', dataKey: 'loggedUser');
     String authorization = boxData['token']['Authorization'];
     try {
-      final result = await clientHttp.get('http://infomatviewerapi.onrender.com/permissions',
+      final result = await clientHttp.get('${AppConst.API_URL}/permissions',
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
       if (result.statusCode == 200) {
@@ -239,7 +244,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
   Future<Map> getDetailInfoMaterial(int id) async {
     try {
       final result = await clientHttp.get(
-        'http://infomatviewerapi.onrender.com/informational-material/$id/details',
+        '${AppConst.API_URL}/informational-material/$id/details',
       );
       var response = result.data;
       if (result.statusCode == 200) {
@@ -259,7 +264,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp
-          .post('http://infomatviewerapi.onrender.com/list-informational-material', {
+          .post('${AppConst.API_URL}/list-informational-material', {
         // aee20c6a981fe6633c17340037ebb6472f1d8eb9 é o id da lista de favoritos como nome
         'name': 'aee20c6a981fe6633c17340037ebb6472f1d8eb9',
         'public': false,
@@ -285,7 +290,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.post(
-          'http://infomatviewerapi.onrender.com/informational-material/review', {},
+          '${AppConst.API_URL}/informational-material/review', {},
           query: {'book_id': bookId, 'rating': rating},
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
@@ -306,7 +311,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.delete(
-          'http://infomatviewerapi.onrender.com/informational-material/review',
+          '${AppConst.API_URL}/informational-material/review',
           queryParameters: {
             'book_id': bookId,
           },
@@ -335,7 +340,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.post(
-          'http://infomatviewerapi.onrender.com/list-informational-material',
+          '${AppConst.API_URL}/list-informational-material',
           {'name': name, 'public': public, 'listIDsInfoMats': ids},
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
@@ -356,7 +361,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.delete(
-          'http://infomatviewerapi.onrender.com/list-informational-material',
+          '${AppConst.API_URL}/list-informational-material',
           queryParameters: {'info_mat_list_id': idList},
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
@@ -377,7 +382,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.post(
-          'http://infomatviewerapi.onrender.com/list-informational-material/item',
+          '${AppConst.API_URL}/list-informational-material/item',
           {'info_mat_id': id, 'info_mat_list_id': idList},
           query: {'info_mat_id': id, 'info_mat_list_id': idList},
           headers: {'Authorization': 'Bearer $authorization'});
@@ -400,7 +405,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.delete(
-          'http://infomatviewerapi.onrender.com/list-informational-material/item',
+          '${AppConst.API_URL}/list-informational-material/item',
           queryParameters: {'item_id': id, 'list_id': idList},
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
@@ -421,7 +426,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.get(
-          'http://infomatviewerapi.onrender.com/list-informational-material',
+          '${AppConst.API_URL}/list-informational-material',
           queryParameters: {'user_email': boxData['email']},
           headers: {'Authorization': 'Bearer $authorization'});
       var response = result.data;
@@ -443,8 +448,8 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final url = enable
-          ? 'http://infomatviewerapi.onrender.com/enable-user'
-          : 'http://infomatviewerapi.onrender.com/disable-user';
+          ? '${AppConst.API_URL}/enable-user'
+          : '${AppConst.API_URL}/disable-user';
       final result = await clientHttp.post(
         url,
         {'target': email},
@@ -472,7 +477,7 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     String authorization = boxData['token']['Authorization'];
     try {
       final result = await clientHttp.post(
-        'http://infomatviewerapi.onrender.com/set-permission',
+        '${AppConst.API_URL}/set-permission',
         {'value': permissionType},
         query: {'target': email, 'days': days},
         headers: {'Authorization': 'Bearer $authorization'},
