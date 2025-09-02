@@ -27,6 +27,7 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
       // You can directly get the store instance inside the callback
       await widget.store.loadbooks(); // Carrega as coleções
       await widget.store.getMostAccessedMaterials(10);
+      await widget.store.getTopRatedMaterials(10);
       widget.store.fetchRelatedBooks('Literatura');
       widget.store.fetchRelatedBooks('Ficção');
       widget.store.fetchRelatedBooks('Romance');
@@ -44,6 +45,7 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
           ),
           _mainContent(),
           _mostAccessedMaterials(),
+          _topRatedMaterials(),
           //LISTAS DE LIVROS RELACIONADOS
           _relatedBooksSection('Literatura'),
           _relatedBooksSection('Ficção'),
@@ -80,111 +82,105 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 70),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          AppText(
-                            text: 'Novas aquisições',
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          SizedBox(
-                            height: 300,
-                            child: Observer(builder: (context) {
-                              if (widget.store.books.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                controller: widget.store.scrollController[0],
-                                itemCount: widget.store.filteredBooks.length,
-                                itemBuilder: (context, index) {
-                                  var book = widget.store.filteredBooks[index];
-                                  return InkWell(
-                                      hoverColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () {
-                                        widget.store.setSelectedBook(book);
-                                        // Get.toNamed("/book-view");
-                                      },
-                                      child: BookCard(book: book));
-                                },
-                              );
-                            }),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-
-                          //BOTÃO VER MAIS
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Container(
-                                alignment: Alignment.center,
-                                height: 40,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  color: AppColors.lightRed.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: AppText(
-                                  text: "Veja Mais!",
-                                  fontSize: 14,
-                                ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        AppText(
+                          text: 'Novas aquisições',
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        SizedBox(
+                          height: 300,
+                          child: Observer(builder: (context) {
+                            if (widget.store.books.isEmpty) {
+                              return const SizedBox();
+                            }
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              controller: widget.store.scrollController[0],
+                              itemCount: widget.store.filteredBooks.length,
+                              itemBuilder: (context, index) {
+                                var book = widget.store.filteredBooks[index];
+                                return InkWell(
+                                    hoverColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () {
+                                      widget.store.setSelectedBook(book);
+                                      // Get.toNamed("/book-view");
+                                    },
+                                    child: BookCard(book: book));
+                              },
+                            );
+                          }),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                    
+                        //BOTÃO VER MAIS
+                        Row(
+                          children: [
+                            const Spacer(),
+                            Container(
+                              alignment: Alignment.center,
+                              height: 40,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightRed.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                        ],
-                      ),
+                              child: AppText(
+                                text: "Veja Mais!",
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 60,
+                        ),
+                      ],
                     ),
 
                     //SETA PARA A ESQUERDA E DIREITA
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 35),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 270,
-                            width: 40,
-                            color: Colors.transparent,
-                            child: IconButton(
-                              onPressed: () => widget.store.scrollToLeft(0),
-                              icon: const Icon(
-                                Icons.arrow_back_ios,
-                                color: AppColors.mediumGrey,
-                              ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 270,
+                          width: 40,
+                          color: Colors.transparent,
+                          child: IconButton(
+                            onPressed: () => widget.store.scrollToLeft(0),
+                            icon: const Icon(
+                              Icons.arrow_back_ios,
+                              color: AppColors.mediumGrey,
                             ),
                           ),
-                          const Spacer(),
-                          Container(
-                            height: 270,
-                            width: 40,
-                            color: Colors.transparent,
-                            child: IconButton(
-                              onPressed: () => widget.store.scrollToRight(0),
-                              icon: const Icon(
-                                Icons.arrow_forward_ios,
-                                color: AppColors.mediumGrey,
-                              ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          height: 270,
+                          width: 40,
+                          color: Colors.transparent,
+                          child: IconButton(
+                            onPressed: () => widget.store.scrollToRight(0),
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: AppColors.mediumGrey,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   ],
                 )
@@ -245,6 +241,84 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
                       itemCount: widget.store.mostAccessedMaterials.length,
                       itemBuilder: (context, index) {
                         var book = widget.store.mostAccessedMaterials[index];
+                        return InkWell(
+                            hoverColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              widget.store.setSelectedBook(book);
+                              print("Book: ${book.title}");
+
+                              Modular.to.pushNamed('/home/book/${book.id}',
+                                  arguments: book);
+                            },
+                            child: BookCard(book: book));
+                      },
+                    );
+                  }),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const SizedBox(
+                  height: 60,
+                ),
+              ],
+            ),
+          ),
+        );
+
+        // return const SizedBox();
+      },
+    );
+  }
+
+  Widget _topRatedMaterials() {
+    double width = MediaQuery.of(context).size.width;
+    return Observer(
+      builder: (_) {
+        //mostra o loading
+        if (widget.store.loading) {
+          return SizedBox(
+            height: 500,
+            width: width,
+            child: const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.black,
+              ),
+            ),
+          );
+        }
+
+        return Center(
+          child: Container(
+            width: AppConst.maxContainerWidth,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.store.topRatedMaterials.isNotEmpty)
+                  AppText(
+                    text: 'Materiais mais bem avaliados',
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                  ),
+                if (widget.store.topRatedMaterials.isNotEmpty)
+                  const SizedBox(
+                    height: 40,
+                  ),
+                SizedBox(
+                  height: 300,
+                  child: Observer(builder: (context) {
+                    if (widget.store.topRatedMaterials.isEmpty) {
+                      return const SizedBox();
+                    }
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      controller: widget.store.scrollController[0],
+                      itemCount: widget.store.topRatedMaterials.length,
+                      itemBuilder: (context, index) {
+                        var book = widget.store.topRatedMaterials[index];
                         return InkWell(
                             hoverColor: Colors.transparent,
                             focusColor: Colors.transparent,

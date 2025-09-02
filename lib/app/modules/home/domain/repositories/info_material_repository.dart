@@ -15,6 +15,7 @@ abstract class IInfoMaterialRepository {
   Future<Either<Failure, List<Book>>> getRelatedInfoMaterial(
       List<String> keywords);
   Future<Either<Failure, List>> getMostAccessedMaterials(int limit);
+  Future<Either<Failure, List>> getTopRatedMaterials(int limit);
   Future<Either<Failure, void>> addTagToMaterial(
       {required int bookId, required List<String> tags});
   Future<Either<Failure, void>> createListInfoMat(

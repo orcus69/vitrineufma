@@ -8,6 +8,7 @@ import 'package:vitrine_ufma/app/core/constants/fonts_sizes.dart';
 import 'package:vitrine_ufma/app/core/service/local_storage/i_local_storage.dart';
 import 'package:vitrine_ufma/app/core/store/auth/auth_store.dart';
 import 'package:vitrine_ufma/app/core/utils/screen_helper.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class AcessibilitiesPage extends StatefulWidget {
   const AcessibilitiesPage({super.key});
@@ -28,6 +29,27 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
     storage = Modular.get<ILocalStorage>();
     boxData = storage.getKeyData(boxKey: 'data', dataKey: 'loggedUser');
     isLogged = ((boxData["id"] ?? '')).isNotEmpty;
+  }
+
+  void _testVLibras() {
+    if (UniversalPlatform.isWeb) {
+      // Usar o helper apenas no web
+      // VLibrasHelper.toggle();
+      
+      // Mostrar uma mensagem informativa
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Procure pelo ícone azul do VLibras no canto da tela para ativar a tradução em Libras!'),
+          duration: Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -75,7 +97,72 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
                     const AppText(
                       textAlign: TextAlign.justify,
                       text:
-                          'O VLibras é uma ferramenta incrível que traduz o conteúdo em texto para a Língua Brasileira de Sinais (Libras), permitindo que pessoas com deficiência auditiva tenham acesso ao conteúdo da Estante Visual. Para o seu uso é necessário a instalação de sua extensão para os navegadores do Google Chrome ou Mozilla. Para a instalação no Chrome Na barra de endereços na parte superior da tela, digite chrome://extensions/ e pressione enter. Em seguida, clique em Abrir Chrome Web Store na parte inferior da tela. Na barra de pesquisa, digite "VLibras" e pressione enter.  Encontre o plugin VLibras e clique em Adicionar ao Chrome. Na caixa de diálogo que aparecer, confirme e clique em Adicionar extensão. Aguarde a instalação. Quando acabar, você verá o ícone do VLibras no canto superior direito do navegador. Agora você pode usar o VLibras para traduzir páginas da web para Libras. Para a instalação no Mozilla, abra o Mozilla Firefox e digite about:addons na barra de endereços. Clique na engrenagem e escolha Procurar complementos. Digite "VLibras" na barra de pesquisa e pressione enter. Ao encontrar o VLibras, clique em + Adicionar ao Firefox. Confirme a ação na caixa de diálogo que será mostrada. Após a instalação, você verá o ícone do VLibras no canto superior direito. Pronto! Agora o VLibras está adicionado ao seu navegador e já pode ser usado para tradução de páginas no Firefox.',
+                          'O VLibras é uma ferramenta incrível que traduz o conteúdo em texto para a Língua Brasileira de Sinais (Libras), permitindo que pessoas com deficiência auditiva tenham acesso ao conteúdo da Estante Visual.',
+                      fontSize: AppFontSize.fz05,
+                      maxLines: 10,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            text: '✓ VLibras Integrado',
+                            fontSize: AppFontSize.fz06,
+                            fontWeight: 'bold',
+                            color: Colors.blue.shade700,
+                          ),
+                          SizedBox(height: 8),
+                          AppText(
+                            text: 'O VLibras já está ativo na Estante Visual! Procure pelo ícone azul no canto inferior direito da tela para ativar a tradução em Libras.',
+                            fontSize: AppFontSize.fz05,
+                            maxLines: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    // Botão de teste do VLibras
+                    if (UniversalPlatform.isWeb)
+                      Container(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            // Implementar teste do VLibras
+                            _testVLibras();
+                          },
+                          icon: Icon(Icons.accessibility_new),
+                          label: Text('Testar VLibras'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (UniversalPlatform.isWeb)
+                      const SizedBox(height: 15),
+                    const AppText(
+                      textAlign: TextAlign.justify,
+                      text:
+                          'Para usar o VLibras na Estante Visual, basta clicar no ícone azul que aparece no canto da tela. O sistema irá traduzir automaticamente o conteúdo em texto para a Língua Brasileira de Sinais.',
+                      fontSize: AppFontSize.fz05,
+                      maxLines: 10,
+                    ),
+                    const SizedBox(height: 10),
+                    const AppText(
+                      textAlign: TextAlign.justify,
+                      text:
+                          'Caso não consiga visualizar o ícone do VLibras, recarregue a página ou limpe o cache do navegador. O sistema funciona melhor nos navegadores Chrome, Firefox e Edge atualizados.',
                       fontSize: AppFontSize.fz05,
                       maxLines: 10,
                     ),

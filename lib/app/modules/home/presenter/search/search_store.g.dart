@@ -97,6 +97,17 @@ mixin _$SearchStore on _SearchStoreBase, Store {
   }
 
   @override
+  void clearSearch() {
+    final _$actionInfo = _$_SearchStoreBaseActionController.startAction(
+        name: '_SearchStoreBase.clearSearch');
+    try {
+      return super.clearSearch();
+    } finally {
+      _$_SearchStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 booksFiltered: ${booksFiltered},

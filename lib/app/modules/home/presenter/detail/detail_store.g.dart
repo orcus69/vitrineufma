@@ -238,6 +238,21 @@ mixin _$DetailStore on _DetailStoreBase, Store {
         .run(() => super.addTagToMaterial(bookId: bookId, tags: tags));
   }
 
+  late final _$removeTagFromMaterialAsyncAction =
+      AsyncAction('_DetailStoreBase.removeTagFromMaterial', context: context);
+
+  @override
+  Future<void> removeTagFromMaterial(
+      {required int bookId,
+      required String tagToRemove,
+      required List<String> currentTags}) {
+    return _$removeTagFromMaterialAsyncAction.run(() => super
+        .removeTagFromMaterial(
+            bookId: bookId,
+            tagToRemove: tagToRemove,
+            currentTags: currentTags));
+  }
+
   late final _$createListInfoMatAsyncAction =
       AsyncAction('_DetailStoreBase.createListInfoMat', context: context);
 

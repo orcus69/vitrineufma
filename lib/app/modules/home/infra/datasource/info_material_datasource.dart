@@ -11,6 +11,7 @@ abstract class IIInfoMaterialDatasource {
   Future<Map> getDetailInfoMaterial(int id);
   Future<List<Book>> getRelatedInfoMaterial({required List<String> keywords});
   Future<List> getMostAccessedMaterials(int limit);
+  Future<List> getTopRatedMaterials(int limit);
   Future<void> addTagToMaterial(
       {required int bookId, required List<String> tags});
   Future<Map> createListInfoMat(

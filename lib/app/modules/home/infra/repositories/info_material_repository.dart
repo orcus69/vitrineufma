@@ -78,6 +78,18 @@ class InfoMaterialRepositoryImpl implements IInfoMaterialRepository {
   }
 
   @override
+  Future<Either<Failure, List>> getTopRatedMaterials(int limit) async {
+    try {
+      var result = await datasource.getTopRatedMaterials(limit);
+      return Right(result);
+    } on DataSourceError catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ServerException(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> addTagToMaterial(
       {required int bookId, required List<String> tags}) async {
     try {

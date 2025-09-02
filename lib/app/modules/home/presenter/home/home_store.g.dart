@@ -146,6 +146,39 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
+  late final _$topRatedMaterialsAtom =
+      Atom(name: '_HomeStoreBase.topRatedMaterials', context: context);
+
+  @override
+  ObservableList<dynamic> get topRatedMaterials {
+    _$topRatedMaterialsAtom.reportRead();
+    return super.topRatedMaterials;
+  }
+
+  @override
+  set topRatedMaterials(ObservableList<dynamic> value) {
+    _$topRatedMaterialsAtom.reportWrite(value, super.topRatedMaterials, () {
+      super.topRatedMaterials = value;
+    });
+  }
+
+  late final _$isLoadingTopRatedMaterialsAtom =
+      Atom(name: '_HomeStoreBase.isLoadingTopRatedMaterials', context: context);
+
+  @override
+  bool get isLoadingTopRatedMaterials {
+    _$isLoadingTopRatedMaterialsAtom.reportRead();
+    return super.isLoadingTopRatedMaterials;
+  }
+
+  @override
+  set isLoadingTopRatedMaterials(bool value) {
+    _$isLoadingTopRatedMaterialsAtom
+        .reportWrite(value, super.isLoadingTopRatedMaterials, () {
+      super.isLoadingTopRatedMaterials = value;
+    });
+  }
+
   late final _$getRelatedInfoMaterialAsyncAction =
       AsyncAction('_HomeStoreBase.getRelatedInfoMaterial', context: context);
 
@@ -171,6 +204,15 @@ mixin _$HomeStore on _HomeStoreBase, Store {
   Future<void> getMostAccessedMaterials(int limit) {
     return _$getMostAccessedMaterialsAsyncAction
         .run(() => super.getMostAccessedMaterials(limit));
+  }
+
+  late final _$getTopRatedMaterialsAsyncAction =
+      AsyncAction('_HomeStoreBase.getTopRatedMaterials', context: context);
+
+  @override
+  Future<void> getTopRatedMaterials(int limit) {
+    return _$getTopRatedMaterialsAsyncAction
+        .run(() => super.getTopRatedMaterials(limit));
   }
 
   late final _$_HomeStoreBaseActionController =
@@ -231,6 +273,8 @@ relatedBooks: ${relatedBooks},
 relatedBooksMap: ${relatedBooksMap},
 mostAccessedMaterials: ${mostAccessedMaterials},
 isLoadingMostAccessedMaterials: ${isLoadingMostAccessedMaterials},
+topRatedMaterials: ${topRatedMaterials},
+isLoadingTopRatedMaterials: ${isLoadingTopRatedMaterials},
 filteredBooks: ${filteredBooks}
     ''';
   }

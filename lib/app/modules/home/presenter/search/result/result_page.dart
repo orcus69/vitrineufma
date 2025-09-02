@@ -249,6 +249,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        const SizedBox(height: 20),
                                         AppText(
                                             text: "Filtros",
                                             fontSize: AppFontSize.fz07,
@@ -256,57 +257,57 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         const SizedBox(height: 20),
 
                                         // Autor
-                                        AppText(
-                                            text: "Autor",
-                                            fontSize: AppFontSize.fz07,
-                                            fontWeight: 'bold'),
-                                        ...getAllAuthors()
-                                            .map((author) => CheckboxListTile(
-                                                  value: selectedAuthors
-                                                      .contains(author),
-                                                  title: Text(author),
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      if (val == true) {
-                                                        selectedAuthors
-                                                            .add(author);
-                                                      } else {
-                                                        selectedAuthors
-                                                            .remove(author);
-                                                      }
-                                                    });
-                                                  },
-                                                )),
-                                        const SizedBox(height: 10),
+                                        // AppText(
+                                        //     text: "Autor",
+                                        //     fontSize: AppFontSize.fz07,
+                                        //     fontWeight: 'bold'),
+                                        // ...getAllAuthors()
+                                        //     .map((author) => CheckboxListTile(
+                                        //           value: selectedAuthors
+                                        //               .contains(author),
+                                        //           title: Text(author),
+                                        //           onChanged: (val) {
+                                        //             setState(() {
+                                        //               if (val == true) {
+                                        //                 selectedAuthors
+                                        //                     .add(author);
+                                        //               } else {
+                                        //                 selectedAuthors
+                                        //                     .remove(author);
+                                        //               }
+                                        //             });
+                                        //           },
+                                        //         )),
+                                        // const SizedBox(height: 10),
 
-                                        // Título
-                                        AppText(
-                                            text: "Título",
-                                            fontSize: AppFontSize.fz07,
-                                            fontWeight: 'bold'),
-                                        ...getAllTitles()
-                                            .map((title) => CheckboxListTile(
-                                                  value: selectedTitles
-                                                      .contains(title),
-                                                  title: Text(title),
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      if (val == true) {
-                                                        selectedTitles
-                                                            .add(title);
-                                                      } else {
-                                                        selectedTitles
-                                                            .remove(title);
-                                                      }
-                                                    });
-                                                  },
-                                                )),
-                                        const SizedBox(height: 10),
+                                        // // Título
+                                        // AppText(
+                                        //     text: "Título",
+                                        //     fontSize: AppFontSize.fz07,
+                                        //     fontWeight: 'bold'),
+                                        // ...getAllTitles()
+                                        //     .map((title) => CheckboxListTile(
+                                        //           value: selectedTitles
+                                        //               .contains(title),
+                                        //           title: Text(title),
+                                        //           onChanged: (val) {
+                                        //             setState(() {
+                                        //               if (val == true) {
+                                        //                 selectedTitles
+                                        //                     .add(title);
+                                        //               } else {
+                                        //                 selectedTitles
+                                        //                     .remove(title);
+                                        //               }
+                                        //             });
+                                        //           },
+                                        //         )),
+                                        // const SizedBox(height: 10),
 
                                         // Edição
                                         AppText(
                                             text: "Edição",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllEditions()
                                             .map((edition) => CheckboxListTile(
@@ -330,7 +331,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Ano de publicação
                                         AppText(
                                             text: "Ano de publicação",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllYears()
                                             .map((year) => CheckboxListTile(
@@ -353,7 +354,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Volume
                                         AppText(
                                             text: "Volume",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllVolumes()
                                             .map((volume) => CheckboxListTile(
@@ -377,7 +378,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Área do conhecimento
                                         AppText(
                                             text: "Área do conhecimento",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllAreas()
                                             .map((area) => CheckboxListTile(
@@ -400,7 +401,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Subárea do conhecimento
                                         AppText(
                                             text: "Subárea do conhecimento",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllSubareas()
                                             .map((subarea) => CheckboxListTile(
@@ -424,7 +425,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Tipo de material
                                         AppText(
                                             text: "Tipo de material",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllTypes()
                                             .map((type) => CheckboxListTile(
@@ -447,7 +448,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Idioma
                                         AppText(
                                             text: "Idioma",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         ...getAllLanguages()
                                             .map((lang) => CheckboxListTile(
@@ -471,7 +472,7 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                         // Avaliação
                                         AppText(
                                             text: "Avaliação",
-                                            fontSize: AppFontSize.fz07,
+                                            fontSize: AppFontSize.fz06,
                                             fontWeight: 'bold'),
                                         Row(
                                           children: List.generate(
@@ -501,8 +502,8 @@ class _ResultSearchPageState extends State<ResultSearchPage> {
                                             ElevatedButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  selectedAuthors.clear();
-                                                  selectedTitles.clear();
+                                                  // selectedAuthors.clear();
+                                                  // selectedTitles.clear();
                                                   selectedEditions.clear();
                                                   selectedYears.clear();
                                                   selectedVolumes.clear();

@@ -13,7 +13,7 @@ class FilteredBookCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         // controller.selectedBook = book;
-        Modular.to.pushNamed('/home/detail', arguments: book);
+       Modular.to.pushNamed('/home/books/${book.id}', arguments: book);
       },
       child: Container(
         constraints: const BoxConstraints(maxWidth: 150),

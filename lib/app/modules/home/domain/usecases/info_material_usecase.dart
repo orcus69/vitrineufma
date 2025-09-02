@@ -31,6 +31,7 @@ abstract class IInfoMaterialUsecase {
   Future<Either<Failure, void>> removeBook(int id);
   Future<Either<Failure, List<Book>>> getRelatedInfoMaterial(List<String> tags);
   Future<Either<Failure, List>> getMostAccessedMaterials(int limit);
+  Future<Either<Failure, List>> getTopRatedMaterials(int limit);
   Future<Either<Failure, void>> addTagToMaterial(
       {required int bookId, required List<String> tags});
   Future<Either<Failure, void>> enableOrDisableUser(
@@ -72,6 +73,12 @@ class InfoMaterialUseCaseImpl implements IInfoMaterialUsecase {
   @override
   Future<Either<Failure, List>> getMostAccessedMaterials(int limit) async {
     var result = await repository.getMostAccessedMaterials(limit);
+    return result.fold((l) => Left(l), (r) => Right(r));
+  }
+
+  @override
+  Future<Either<Failure, List>> getTopRatedMaterials(int limit) async {
+    var result = await repository.getTopRatedMaterials(limit);
     return result.fold((l) => Left(l), (r) => Right(r));
   }
 

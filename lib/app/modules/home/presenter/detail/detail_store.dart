@@ -147,13 +147,14 @@ abstract class _DetailStoreBase with Store {
   Future<void> getRelatedInfoMaterial(List<String> keywords) async {
     loading = true;
     relatedBooks.clear();
+    debugPrint("Buscando materiais relacionados com keywords: $keywords");
     var result = await infoMaterialUsecase.getRelatedInfoMaterial(keywords);
 
     result.fold((l) async {
-      debugPrint("Error: $l");
+      debugPrint("Error ao buscar materiais relacionados: $l");
       loading = false;
     }, (r) {
-      debugPrint("Success:");
+      debugPrint("Success: Encontrados ${r.length} materiais relacionados");
       relatedBooks = r.asObservable();
       loading = false;
     });
@@ -266,9 +267,32 @@ abstract class _DetailStoreBase with Store {
       showSnackbarError("Erro ao alterar tags");
     }, (r) {
       debugPrint("Success");
-      // this.tags = tags.asObservable();
-      showSnackbarSuccess(
-          "Tags alteradas com sucesso, atualize a página para vizualizar as alterações");
+      book.tags = tags;
+      // showSnackbarSuccess(
+      //     "Tags alteradas com sucesso, atualize a página para vizualizar as alterações");
+    });
+  }
+
+  //REMOVER TAG INDIVIDUAL DO MATERIAL INFORMATIVO
+  @action
+  Future<void> removeTagFromMaterial(
+      {required int bookId, required String tagToRemove, required List<String> currentTags}) async {
+    // Criar nova lista sem a tag a ser removida
+    List<String> updatedTags = List.from(currentTags);
+    updatedTags.remove(tagToRemove);
+    
+    // Usar o método existente para atualizar com a nova lista
+    var result =
+        await infoMaterialUsecase.addTagToMaterial(bookId: bookId, tags: updatedTags);
+
+    result.fold((l) {
+      debugPrint("Error: $l");
+      showSnackbarError("Erro ao remover tag");
+    }, (r) {
+      debugPrint("Success");
+      // showSnackbarSuccess("Tag removida com sucesso");
+      // Atualizar o livro local com as novas tags
+      book.tags = updatedTags;
     });
   }
 
@@ -286,7 +310,7 @@ abstract class _DetailStoreBase with Store {
       showSnackbarError("Erro ao criar lista");
     }, (r) {
       debugPrint("Success");
-      showSnackbarSuccess("Lista criada com sucesso");
+      // showSnackbarSuccess("Lista criada com sucesso");
     });
   }
 

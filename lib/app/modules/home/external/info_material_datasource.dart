@@ -159,6 +159,26 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
     }
   }
 
+  // BUSCA OS X MATERIAIS MAIS BEM AVALIADOS
+  @override
+  Future<List> getTopRatedMaterials(int limit) async {
+    try {
+      final result = await clientHttp.get(
+        '${AppConst.API_URL}/top-rated-informational-materials',
+      );
+      var response = result.data;
+      if (result.statusCode == 200) {
+        debugPrint('response $response');
+        List<int> ids =
+            (response as List).map((item) => item['id'] as int).toList();
+        return ids;
+      }
+      throw DataSourceError(message: response['message']);
+    } catch (e) {
+      throw DataSourceError(message: e.toString());
+    }
+  }
+
   // ALTERA AS TAGS DE UM MATERIAL
   @override
   Future<void> addTagToMaterial(

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:mobx/mobx.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:vitrine_ufma/app/core/components/custom_textfield.dart';
-import 'package:vitrine_ufma/app/core/components/image_asset.dart';
 import 'package:vitrine_ufma/app/core/components/text.dart';
+import 'package:vitrine_ufma/app/core/components/vlibras_clickable_text.dart';
 import 'package:vitrine_ufma/app/core/constants/colors.dart';
 import 'package:vitrine_ufma/app/core/constants/const.dart';
 import 'package:vitrine_ufma/app/core/constants/fonts_sizes.dart';
@@ -64,6 +62,36 @@ class _DetailPageState extends State<DetailPage> {
       
 
       book = store.book;
+      
+      // Buscar materiais relacionados baseado nas tags do livro
+      List<String> keywords = [];
+      if (book!.tags.isNotEmpty) {
+        keywords = book!.tags;
+        debugPrint("Usando tags para busca: ${book!.tags}");
+      } else if (book!.matters.isNotEmpty) {
+        keywords = book!.matters;
+        debugPrint("Usando matters para busca: ${book!.matters}");
+      }
+      
+      if (keywords.isNotEmpty) {
+        debugPrint("Iniciando busca de materiais relacionados...");
+        await store.getRelatedInfoMaterial(keywords);
+        // Remover o livro atual da lista de materiais relacionados
+        store.relatedBooks.removeWhere((element) => element.id == book!.id);
+        debugPrint("Materiais relacionados encontrados: ${store.relatedBooks.length}");
+      } else {
+        debugPrint("Nenhuma keyword disponível para busca");
+      }
+      
+      // Se não encontrou materiais relacionados, buscar os mais acessados como alternativa
+      if (store.relatedBooks.isEmpty) {
+        debugPrint("Nenhum material relacionado encontrado, buscando mais acessados");
+        await store.getMostAccessedMaterials(6);
+        // Remover o livro atual da lista de mais acessados também
+        store.mostAccessedMaterials.removeWhere((element) => element.id == book!.id);
+        debugPrint("Materiais mais acessados encontrados: ${store.mostAccessedMaterials.length}");
+      }
+      
       // _rating = 
     });
   }
@@ -177,24 +205,23 @@ class _DetailPageState extends State<DetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Título do livro
-                        SelectableText(
+                        VLibrasClickableText(
                           book!.title,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.black,
                           ),
+                          tooltip: 'Clique para traduzir o título em Libras',
                         ),
-                        // AppText(
-                        //   text: book!.title,
-                        //   maxLines: 4,
-                        //   fontSize: 20,
-                        //   fontWeight: 'bold',
-                        // ),
                         const SizedBox(height: 10),
 
                         // Autor do livro
-                        AppText(text: book!.author[0], fontSize: 16),
+                        VLibrasClickableText(
+                          'Autor: ${book!.author[0]}',
+                          style: TextStyle(fontSize: 16),
+                          tooltip: 'Clique para traduzir o autor em Libras',
+                        ),
                         const SizedBox(height: 10),
 
                         // Avaliação do livro
@@ -213,19 +240,61 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(height: 20),
                         const AppText(text: 'Resumo', fontSize: 16),
                         const SizedBox(height: 20),
-                        AppText(
-                          text: book!.abstract1,
-                          textAlign: TextAlign.justify,
-                          fontSize: 16,
-                          maxLines: 20,
+                        VLibrasClickableWrapper(
+                          textToTranslate: book!.abstract1,
+                          tooltip: 'Clique para traduzir o resumo em Libras',
+                          child: AppText(
+                            text: book!.abstract1,
+                            textAlign: TextAlign.justify,
+                            fontSize: 16,
+                            maxLines: 20,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
                             const AppText(text: 'Tags: ', fontSize: 16),
-                            book!.tags.isEmpty
-                                ? const AppText(text: 'Sem tags', fontSize: 16)
-                                : MaterialTags(tags: book!.tags),
+                            Expanded(
+                              child: book!.tags.isEmpty
+                                  ? const AppText(text: 'Sem tags', fontSize: 16)
+                                  : MaterialTags(
+                                      tags: book!.tags,
+                                      canRemove: layoutStore.permissions.isNotEmpty &&
+                                          layoutStore.permissions[0]['permission_type'] == "FULL",
+                                      onRemoveTag: (tagToRemove) async {
+                                        bool? confirm = await showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Remover Tag'),
+                                              content: Text(
+                                                  'Você tem certeza que deseja remover a tag "$tagToRemove"?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context, false),
+                                                  child: const Text('Cancelar'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context, true),
+                                                  child: const Text('Remover'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                        if (confirm == true) {
+                                          await store.removeTagFromMaterial(
+                                            bookId: book!.id.toInt(),
+                                            tagToRemove: tagToRemove,
+                                            currentTags: book!.tags,
+                                          );
+                                          setState(() {});
+                                        }
+                                      },
+                                    ),
+                            ),
                             const SizedBox(width: 10),
                             if (layoutStore.permissions.isEmpty)
                             const SizedBox()
@@ -267,6 +336,8 @@ class _DetailPageState extends State<DetailPage> {
                                                   );
 
                                                   Navigator.pop(context);
+
+                                                  setState(() {});
                                                 }
                                               },
                                               child: const Text('Adicionar'),
@@ -313,6 +384,7 @@ class _DetailPageState extends State<DetailPage> {
                                     if (confirm == true) {
                                       await store.addTagToMaterial(
                                           bookId: book!.id.toInt(), tags: []);
+                                      setState(() {});
                                     }
                                   },
                                   child: const Tooltip(
@@ -709,18 +781,26 @@ class _DetailPageState extends State<DetailPage> {
             Observer(
               builder: (context) {
                 if (!store.loading) {
-                  if (store.relatedBooks.length > 1) {
+                  // Determinar qual lista usar e o título
+                  List materialsToShow = store.relatedBooks.isNotEmpty 
+                      ? store.relatedBooks 
+                      : store.mostAccessedMaterials;
+                  String sectionTitle = store.relatedBooks.isNotEmpty 
+                      ? 'Materiais relacionados' 
+                      : 'Materiais mais acessados';
+                  
+                  if (materialsToShow.isNotEmpty) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
                         const Divider(),
                         const SizedBox(height: 20),
-                        const Row(
+                        Row(
                           children: [
-                            SizedBox(width: 70),
+                            const SizedBox(width: 70),
                             AppText(
-                              text: 'Materiais relacionados',
+                              text: sectionTitle,
                               fontSize: 20,
                               fontWeight: 'bold',
                             ),
@@ -730,83 +810,39 @@ class _DetailPageState extends State<DetailPage> {
                         Container(
                           width: MediaQuery.of(context).size.width - 400,
                           padding: const EdgeInsets.symmetric(horizontal: 70),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            itemCount: store.relatedBooks.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisSpacing: 12,
-                              mainAxisExtent: 300,
-                              mainAxisSpacing: 20,
-                              crossAxisCount: store.bookCount(
-                                  MediaQuery.of(context).size.width - 400),
+                          child: Center(
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              itemCount: materialsToShow.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisSpacing: 12,
+                                mainAxisExtent: 200,
+                                mainAxisSpacing: 20,
+                                crossAxisCount: store.bookCount(
+                                    MediaQuery.of(context).size.width - 400),
+                              ),
+                              itemBuilder: (context, index) {
+                                if(index > 2){
+                                  return const SizedBox();
+                                }
+                                return InkWell(
+                                  onTap: () {
+                                    Modular.to.pushNamed(
+                                        'book/${materialsToShow[index].id}');
+                                  },
+                                  child: FilteredBookCard(
+                                      book: materialsToShow[index]),
+                                );
+                              },
                             ),
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  Modular.to.pushNamed(
-                                      'book/${store.relatedBooks[index].id}');
-                                  // store
-                                  //     .setSelectedBook(store.relatedBooks[index]);
-                                },
-                                child: FilteredBookCard(
-                                    book: store.relatedBooks[index]),
-                              );
-                            },
                           ),
                         ),
                         const SizedBox(height: 50),
                       ],
                     );
                   } else {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        const Divider(),
-                        const SizedBox(height: 20),
-                        const Row(
-                          children: [
-                            SizedBox(width: 70),
-                            AppText(
-                              text: 'Materiais relacionados',
-                              fontSize: 20,
-                              fontWeight: 'bold',
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Container(
-                          width: MediaQuery.of(context).size.width - 200,
-                          padding: const EdgeInsets.symmetric(horizontal: 70),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            itemCount: store.relatedBooks.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisSpacing: 12,
-                              mainAxisExtent: 300,
-                              mainAxisSpacing: 20,
-                              crossAxisCount: store.bookCount(
-                                  MediaQuery.of(context).size.width - 200),
-                            ),
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  Modular.to.pushNamed(
-                                      'book/${store.mostAccessedMaterials[index].id}');
-                                  // store.setSelectedBook(
-                                  //     store.mostAccessedMaterials[index]);
-                                },
-                                child: FilteredBookCard(
-                                    book: store.mostAccessedMaterials[index]),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                      ],
-                    );
+                    return const SizedBox(); // Não mostrar nada se não há materiais
                   }
                 } else {
                   return const CircularProgressIndicator();

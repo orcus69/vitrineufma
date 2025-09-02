@@ -71,19 +71,24 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               ..._selectedFields.asMap().entries.map((entry) {
                 int index = entry.key;
                 String value = entry.value;
-                return _buildDropdownField('Campo ${index + 1}', value,
-                    (newValue) {
-                  setState(() {
-                    _selectedFields[index] = newValue!;
-                  });
-                }, controller: _customTextControllers[index]);
+                return _buildDropdownField(
+                  'Campo ${index + 1}', 
+                  value,
+                  (newValue) {
+                    setState(() {
+                      _selectedFields[index] = newValue!;
+                    });
+                  }, 
+                  controller: _customTextControllers[index],
+                  fieldIndex: index,
+                );
               }).toList(),
               TextButton.icon(
                 onPressed: () {
                   setState(() {
                     _selectedFields.add('Tudo');
                     _customTextControllers.add(TextEditingController());
-                    _selectedOperators.add('E');
+                    _selectedOperators.add('OU');
                   });
                 },
                 icon: const Icon(Icons.add),
@@ -204,7 +209,13 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
         'Assunto',
         'Tag'
       ],
-      TextEditingController? controller}) {
+      TextEditingController? controller,
+      int? fieldIndex}) {
+    // Para campos personalizados (com controller), usar o fieldIndex
+    // Para outros campos (sem controller), não mostrar operador
+    bool isCustomField = controller != null && options.length == 5;
+    bool isLastField = fieldIndex != null && fieldIndex == _selectedFields.length - 1;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -244,7 +255,9 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               ),
             ),
           const SizedBox(width: 10),
-          if (options.length == 5 && _selectedFields.length > 1)
+          // Mostrar operador apenas se for campo personalizado, 
+          // houver mais de um campo e NÃO for o último campo
+          if (isCustomField && _selectedFields.length > 1 && !isLastField)
             Expanded(
               flex: 1,
               child: Container(
@@ -257,8 +270,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     border: InputBorder.none,
                   ),
-                  value: _selectedOperators[
-                      _selectedFields.indexOf(selectedValue)],
+                  value: fieldIndex != null ? _selectedOperators[fieldIndex] : null,
                   items: ['E', 'OU', 'NÃO'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -266,30 +278,29 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                    setState(() {
-                      _selectedOperators[
-                          _selectedFields.indexOf(selectedValue)] = value!;
-                    });
+                    if (fieldIndex != null) {
+                      setState(() {
+                        _selectedOperators[fieldIndex] = value!;
+                      });
+                    }
                   },
                 ),
               ),
             ),
-          if(_selectedFields.length > 1 && options.length == 5)
-          IconButton(
-            onPressed: () {
-              setState(() {
-                int index = _selectedFields.indexOf(selectedValue);
-                if (index != -1) {
-                  _selectedFields.removeAt(index);
-                  _customTextControllers.removeAt(index);
-                  _selectedOperators.removeAt(index);
+          // Botão de deletar apenas para campos personalizados com mais de um campo
+          if (isCustomField && _selectedFields.length > 1)
+            IconButton(
+              onPressed: () {
+                if (fieldIndex != null) {
+                  setState(() {
+                    _selectedFields.removeAt(fieldIndex);
+                    _customTextControllers.removeAt(fieldIndex);
+                    _selectedOperators.removeAt(fieldIndex);
+                  });
                 }
-              });
-            },
-            icon: (options.length == 5)
-                ? const Icon(Icons.delete, color: AppColors.normalRed)
-                : const SizedBox(width:00),
-          )
+              },
+              icon: const Icon(Icons.delete, color: AppColors.normalRed),
+            ),
         ],
       ),
     );
@@ -307,7 +318,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
         case 'Assunto':
           return 'matters';
         case 'Tag':
-          return 'tag';
+          return 'tags'; // Corrigido para plural para ser consistente
         default:
           return 'all';
       }
@@ -324,28 +335,57 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
       // Process custom field conditions
       for (int i = 0; i < _selectedFields.length; i++) {
         String field = formatField(_selectedFields[i]);
-        String value = _customTextControllers[i].text;
+        String value = _customTextControllers[i].text.trim();
         if (value.isEmpty) continue;
 
-        String operator = _selectedOperators[i];
-        Map<String, dynamic> condition = {field: value};
+        // Para campos "all", usar a estrutura OR similar ao datasource
+        if (field == 'all') {
+          Map<String, dynamic> condition = {
+            "or": [
+              {"title": value},
+              {"author": value},
+              {"matters": value},
+              {"sub_matters": value},
+              {"language": value},
+              {"tags": value},
+              {"isbn": value},
+              {"issn": value},
+            ]
+          };
+          
+          String operator = _selectedOperators[i];
+          switch (operator) {
+            case 'E':
+              mainConditions.add(condition);
+              break;
+            case 'OU':
+              currentOrConditions.add(condition);
+              break;
+            case 'NÃO':
+              currentNotConditions.add({'not': condition});
+              break;
+          }
+        } else {
+          String operator = _selectedOperators[i];
+          Map<String, dynamic> condition = {field: value};
 
-        switch (operator) {
-          case 'E':
-            mainConditions.add(condition);
-            break;
-          case 'OU':
-            currentOrConditions.add(condition);
-            break;
-          case 'NÃO':
-            currentNotConditions.add({'not': condition});
-            break;
+          switch (operator) {
+            case 'E':
+              mainConditions.add(condition);
+              break;
+            case 'OU':
+              currentOrConditions.add(condition);
+              break;
+            case 'NÃO':
+              currentNotConditions.add({'not': condition});
+              break;
+          }
         }
       }
 
       // Process year range condition
-      String startYear = _yearStartController.text;
-      String endYear = _yearEndController.text;
+      String startYear = _yearStartController.text.trim();
+      String endYear = _yearEndController.text.trim();
       if (startYear.isNotEmpty || endYear.isNotEmpty) {
         Map<String, dynamic> yearCondition = {};
         if (startYear.isNotEmpty && endYear.isNotEmpty) {
@@ -405,6 +445,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
         };
       }
 
+      print("Query construída: $finalQuery");
       return finalQuery;
     }
 
@@ -413,11 +454,68 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
       children: [
         InkWell(
           onTap: () {
-            if(_selectedFields.contains('Tudo')) {
-              int index = _selectedFields.indexOf('Tudo');
-              Modular.to.pushNamed('result/${_customTextControllers[index].text}');
+            // Validação antes de executar a busca
+            bool hasValidInput = false;
+            
+            // Verificar se há campos preenchidos
+            for (int i = 0; i < _customTextControllers.length; i++) {
+              if (_customTextControllers[i].text.isNotEmpty) {
+                hasValidInput = true;
+                break;
+              }
+            }
+            
+            // Verificar se há filtros de ano
+            if (_yearStartController.text.isNotEmpty || _yearEndController.text.isNotEmpty) {
+              hasValidInput = true;
+            }
+            
+            // Verificar se há filtros selecionados
+            if (_selectedMaterialType != 'Todos os Campos' || _selectedLanguage != 'Todos') {
+              hasValidInput = true;
+            }
+            
+            if (!hasValidInput) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Preencha pelo menos um campo de busca'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
               return;
             }
+            
+            // Verificar se deve usar busca simples (apenas campo "Tudo" preenchido sem outros filtros)
+            bool shouldUseSimpleSearch = false;
+            if (_selectedFields.length == 1 && _selectedFields[0] == 'Tudo') {
+              // Verificar se não há outros filtros aplicados
+              bool hasOtherFilters = _yearStartController.text.isNotEmpty || 
+                                    _yearEndController.text.isNotEmpty ||
+                                    _selectedMaterialType != 'Todos os Campos' ||
+                                    _selectedLanguage != 'Todos';
+              
+              if (!hasOtherFilters) {
+                shouldUseSimpleSearch = true;
+              }
+            }
+            
+            if (shouldUseSimpleSearch) {
+              String searchText = _customTextControllers[0].text.trim();
+              if (searchText.isNotEmpty) {
+                // Use o store para busca simples para manter consistência
+                store.searchController.text = searchText;
+                store.search(searchText);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Digite um termo para buscar'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
+              return;
+            }
+            
             store.advancedSearchMethod(buildQueryJson());
           },
           child: Container(
@@ -446,7 +544,34 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
         const SizedBox(width: 20),
         InkWell(
           onTap: () {
-            // store.clear();
+            setState(() {
+              // Limpar todos os controladores de texto
+              for (var controller in _customTextControllers) {
+                controller.clear();
+              }
+              _yearStartController.clear();
+              _yearEndController.clear();
+              
+              // Resetar valores dos dropdowns
+              _selectedMaterialType = 'Todos os Campos';
+              _selectedLanguage = 'Todos';
+              
+              // Resetar campos e operadores para o estado inicial
+              _selectedFields = ['Tudo'];
+              _selectedOperators = ['E'];
+              _customTextControllers = [TextEditingController()];
+              
+              // Limpar o searchController do store também
+              store.searchController.clear();
+            });
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Campos limpos com sucesso'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
           },
           child: Container(
             decoration: BoxDecoration(

@@ -10,10 +10,27 @@ import 'package:vitrine_ufma/firebase_options.dart';
 import 'app/app_module.dart';
 import 'app/app_widget.dart';
 
+// Import condicional do VLibras helper
+import 'app/core/utils/vlibras_helper_stub.dart' if (dart.library.html) 'app/core/utils/vlibras_helper.dart';
+
 void main() async {
   initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
+  
+  // Inicializa VLibras para web
+  if (UniversalPlatform.isWeb) {
+    VLibrasHelper.configureAccessibility();
+    // Delay para garantir que o DOM esteja pronto
+    Future.delayed(Duration(milliseconds: 1000), () {
+      VLibrasHelper.initialize();
+      // Debug após inicialização
+      Future.delayed(Duration(milliseconds: 2000), () {
+        VLibrasHelper.debug();
+      });
+    });
+  }
+  
   if (!UniversalPlatform.isWeb) {
     var path = await getApplicationSupportDirectory();
     Hive.init(

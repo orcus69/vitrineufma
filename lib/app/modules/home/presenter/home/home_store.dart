@@ -171,4 +171,40 @@ abstract class _HomeStoreBase with Store {
       isLoadingMostAccessedMaterials = false;
     });
   }
+
+  // BUSCA MATERIS MAIS BEM AVALIADOS
+  @observable
+  ObservableList topRatedMaterials = [].asObservable();
+  @observable
+  bool isLoadingTopRatedMaterials = false;
+  @action
+  Future<void> getTopRatedMaterials(int limit) async {
+    if (isLoadingTopRatedMaterials) return;
+    isLoadingTopRatedMaterials = true;
+    loading = true;
+    topRatedMaterials.clear();
+
+    var result = await infoMaterialUsecase.getTopRatedMaterials(limit);
+
+    result.fold((l) async {
+      debugPrint("Error: $l");
+      loading = false;
+      isLoadingTopRatedMaterials = false;
+    }, (r) async {
+      debugPrint("Success: ");
+      for (var id in r) {
+        var result = await infoMaterialUsecase.getDetailInfoMaterial(id);
+        result.fold((l) {
+          debugPrint("Error: $l");
+          loading = false;
+        }, (r) {
+          topRatedMaterials
+              .add(Book.fromJson(Map<String, dynamic>.from(r).asObservable()));
+        });
+      }
+      topRatedMaterials = topRatedMaterials.asObservable();
+      loading = false;
+      isLoadingTopRatedMaterials = false;
+    });
+  }
 }
