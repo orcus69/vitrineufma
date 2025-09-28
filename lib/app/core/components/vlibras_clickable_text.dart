@@ -45,15 +45,15 @@ class VLibrasClickableText extends StatelessWidget {
     }
 
     return Tooltip(
-      message: tooltip ?? 'Clique para traduzir em Libras',
-      child: InkWell(
-        onTap: () => _handleTap(),
-        borderRadius: BorderRadius.circular(4),
-        highlightColor: highlightColor ?? 
-                       Theme.of(context).primaryColor.withOpacity(0.1),
-        splashColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      message: tooltip ?? 'Passe o mouse para traduzir em Libras',
+      child: MouseRegion(
+        onEnter: (event) => _handleHover(),
         child: Container(
           padding: padding ?? EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.transparent,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,7 +83,7 @@ class VLibrasClickableText extends StatelessWidget {
     );
   }
 
-  void _handleTap() {
+  void _handleHover() {
     try {
       if (VLibrasHelper.isAvailable) {
         VLibrasHelper.activateAndTranslate(text);
@@ -92,7 +92,7 @@ class VLibrasClickableText extends StatelessWidget {
         VLibrasHelper.createTranslationArea(text);
       }
     } catch (e) {
-      print('Erro ao processar clique para VLibras: $e');
+      print('Erro ao processar hover para VLibras: $e');
     }
   }
 }
@@ -123,22 +123,22 @@ class VLibrasClickableWrapper extends StatelessWidget {
     }
 
     return Tooltip(
-      message: tooltip ?? 'Clique para traduzir em Libras',
-      child: InkWell(
-        onTap: () => _handleTap(context),
-        borderRadius: BorderRadius.circular(4),
-        highlightColor: highlightColor ?? 
-                       Theme.of(context).primaryColor.withOpacity(0.1),
-        splashColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      message: tooltip ?? 'Passe o mouse para traduzir em Libras',
+      child: MouseRegion(
+        onEnter: (event) => _handleHover(context),
         child: Container(
           padding: padding,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.transparent,
+          ),
           child: child,
         ),
       ),
     );
   }
 
-  void _handleTap(BuildContext context) {
+  void _handleHover(BuildContext context) {
     try {
       if (VLibrasHelper.isAvailable) {
         VLibrasHelper.activateAndTranslate(textToTranslate);
@@ -166,7 +166,7 @@ class VLibrasClickableWrapper extends StatelessWidget {
         }
       }
     } catch (e) {
-      print('Erro ao processar clique para VLibras: $e');
+      print('Erro ao processar hover para VLibras: $e');
       
       if (showFeedback) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +194,7 @@ mixin VLibrasPageMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  /// Traduz texto específico
+  /// Traduz texto específico (pode ser acionado por hover ou clique)
   void translateText(String text) {
     if (UniversalPlatform.isWeb) {
       VLibrasHelper.activateAndTranslate(text);

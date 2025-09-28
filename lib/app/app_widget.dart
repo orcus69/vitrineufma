@@ -8,6 +8,7 @@ import 'package:vitrine_ufma/app/core/theme/app_theme_dark.dart';
 import 'package:vitrine_ufma/app/core/theme/app_theme_light.dart';
 import 'package:vitrine_ufma/app/core/utils/remove_scrollglow.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:vitrine_ufma/app/core/routes/vlibras_route_observer.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});

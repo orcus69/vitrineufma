@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:vitrine_ufma/app/core/utils/screen_helper.dart';
 import 'package:vitrine_ufma/app/modules/auth/domain/usecases/logout_usecase.dart';
+import 'package:vitrine_ufma/app/core/components/vlibras_clickable_text.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({
@@ -84,13 +86,23 @@ class _SideMenuState extends State<SideMenu> with RouteAware {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Tamanho do texto'),
-                    content: const Text(
-                        'Para aumentar ou diminuir a fonte no nosso site, utilize os atalhos Ctrl+ (para aumentar) e Ctrl- (para diminuir) no seu teclado. Caso queira restaurar o zoom para o tamanho original, basta pressionar as teclas "Ctrl" e "0" (zero) simultaneamente.'),
+                    title: UniversalPlatform.isWeb ? 
+                           VLibrasClickableText('Tamanho do texto', showIcon: false, tooltip: 'Passe o mouse para traduzir em Libras') :
+                           const Text('Tamanho do texto'),
+                    content: UniversalPlatform.isWeb ? 
+                             VLibrasClickableText(
+                               'Para aumentar ou diminuir a fonte no nosso site, utilize os atalhos Ctrl+ (para aumentar) e Ctrl- (para diminuir) no seu teclado. Caso queira restaurar o zoom para o tamanho original, basta pressionar as teclas "Ctrl" e "0" (zero) simultaneamente.',
+                               showIcon: false,
+                               tooltip: 'Passe o mouse para traduzir em Libras',
+                             ) :
+                             const Text(
+                               'Para aumentar ou diminuir a fonte no nosso site, utilize os atalhos Ctrl+ (para aumentar) e Ctrl- (para diminuir) no seu teclado. Caso queira restaurar o zoom para o tamanho original, basta pressionar as teclas "Ctrl" e "0" (zero) simultaneamente.'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
+                        child: UniversalPlatform.isWeb ? 
+                               VLibrasClickableText('OK', showIcon: false, tooltip: 'Passe o mouse para traduzir em Libras') :
+                               const Text('OK'),
                       ),
                     ],
                   );
