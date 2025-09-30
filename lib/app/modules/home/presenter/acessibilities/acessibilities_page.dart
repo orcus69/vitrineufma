@@ -36,19 +36,19 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
       // Usar o helper apenas no web
       // VLibrasHelper.toggle();
       
-      // Mostrar uma mensagem informativa
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Procure pelo ícone azul do VLibras no canto da tela para ativar a tradução em Libras!'),
-          duration: Duration(seconds: 4),
-          action: SnackBarAction(
-            label: 'OK',
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ),
-      );
+      // Removido a mensagem informativa para evitar notificações
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Procure pelo ícone azul do VLibras no canto da tela para ativar a tradução em Libras!'),
+      //     duration: Duration(seconds: 4),
+      //     action: SnackBarAction(
+      //       label: 'OK',
+      //       onPressed: () {
+      //         ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //       },
+      //     ),
+      //   ),
+      // );
     }
   }
 

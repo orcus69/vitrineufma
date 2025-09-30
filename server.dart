@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() async {
-  var server = await HttpServer.bind('localhost', 8083);
+  var server = await HttpServer.bind('localhost', 8085);
   var buildPath = 'build/web';
   
-  print('Server running on http://localhost:8083');
+  print('Server running on http://localhost:8085');
   
   await for (var request in server) {
     var path = request.uri.path;
