@@ -28,6 +28,10 @@ class _AccessibleHomePageState extends State<AccessibleHomePage> with VLibrasPag
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
   
+  // Add scroll controller for keyboard scrolling
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _scrollFocusNode = FocusNode();
+  
   // Estados para demonstrar interatividade acessível
   bool _isFavorite = false;
   int _counter = 0;
@@ -41,6 +45,11 @@ class _AccessibleHomePageState extends State<AccessibleHomePage> with VLibrasPag
     super.initState();
     // Garante que o VLibras seja reinicializado quando a página for carregada
     reinitializeVLibras();
+    
+    // Request focus for keyboard scrolling
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -49,6 +58,9 @@ class _AccessibleHomePageState extends State<AccessibleHomePage> with VLibrasPag
     _mainContentFocusNode.dispose();
     _searchFocusNode.dispose();
     _searchController.dispose();
+    // Dispose scroll controllers
+    _scrollController.dispose();
+    _scrollFocusNode.dispose();
     super.dispose();
   }
 
@@ -96,13 +108,69 @@ class _AccessibleHomePageState extends State<AccessibleHomePage> with VLibrasPag
     refreshVLibras();
   }
 
+  /// Handle keyboard events for scrolling
+  void _handleScrollKeyEvent(RawKeyEvent event) {
+    if (event is RawKeyDownEvent) {
+      // Handle arrow key events for scrolling
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        // Scroll up by 100 pixels
+        _scrollController.animateTo(
+          _scrollController.offset - 100,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.linear,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        // Scroll down by 100 pixels
+        _scrollController.animateTo(
+          _scrollController.offset + 100,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.linear,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
+        // Page up - scroll up by 80% of screen height
+        final screenHeight = MediaQuery.of(context).size.height;
+        _scrollController.animateTo(
+          _scrollController.offset - screenHeight * 0.8,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
+        // Page down - scroll down by 80% of screen height
+        final screenHeight = MediaQuery.of(context).size.height;
+        _scrollController.animateTo(
+          _scrollController.offset + screenHeight * 0.8,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.home) {
+        // Home key - scroll to top
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.end) {
+        // End key - scroll to bottom
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AccessibilityControls(
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-        floatingActionButton: _buildFloatingActionButton(),
+    return RawKeyboardListener(
+      focusNode: _scrollFocusNode,
+      onKey: _handleScrollKeyEvent,
+      child: AccessibilityControls(
+        child: Scaffold(
+          appBar: _buildAppBar(),
+          body: _buildBody(),
+          floatingActionButton: _buildFloatingActionButton(),
+        ),
       ),
     );
   }
@@ -146,6 +214,7 @@ class _AccessibleHomePageState extends State<AccessibleHomePage> with VLibrasPag
       // Define que este é o conteúdo principal da página
       container: true,
       child: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             // Link de skip navigation para usuários de teclado

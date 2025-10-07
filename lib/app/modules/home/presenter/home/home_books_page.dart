@@ -68,6 +68,36 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
           duration: const Duration(milliseconds: 100),
           curve: Curves.linear,
         );
+      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
+        // Page up - scroll up by half the screen height
+        final screenHeight = MediaQuery.of(context).size.height;
+        _scrollController.animateTo(
+          _scrollController.offset - screenHeight * 0.8,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
+        // Page down - scroll down by half the screen height
+        final screenHeight = MediaQuery.of(context).size.height;
+        _scrollController.animateTo(
+          _scrollController.offset + screenHeight * 0.8,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.home) {
+        // Home key - scroll to top
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.end) {
+        // End key - scroll to bottom
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       }
     }
   }
