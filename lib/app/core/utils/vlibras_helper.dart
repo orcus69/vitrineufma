@@ -352,8 +352,7 @@ class VLibrasHelper {
         ..style.bottom = '20px'
         ..style.right = '20px'
         ..style.width = '210px'
-        ..style.height = 'auto'
-        ..style.minHeight = '60px'
+        ..style.height = '80px'  // Fixed height instead of auto/min-height
         ..style.backgroundColor = 'rgba(255, 255, 255, 0.95)'
         ..style.border = '2px solid #0066cc'
         ..style.borderRadius = '8px'
@@ -392,7 +391,7 @@ class VLibrasHelper {
       final textContent = html.DivElement()
         ..style.color = '#333'
         ..style.flex = '1'
-        ..style.overflow = 'auto'
+        ..style.overflow = 'auto'  // Allow scrolling for overflow content
         ..style.fontSize = '13px'
         ..text = text;
       
