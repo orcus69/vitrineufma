@@ -196,11 +196,10 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
 
   Widget _mostAccessedMaterials() {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return Observer(
       builder: (_) {
-        //mostra o loading
-        if (widget.store.loading) {
+        //mostra o loading especifico dos materiais mais acessados
+        if (widget.store.isLoadingMostAccessedMaterials) {
           return SizedBox(
             height: 500,
             width: width,
@@ -212,6 +211,11 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
           );
         }
 
+        // Se não está carregando e a lista está vazia, não mostra nada
+        if (widget.store.mostAccessedMaterials.isEmpty) {
+          return const SizedBox();
+        }
+
         return Center(
           child: Container(
             width: AppConst.maxContainerWidth,
@@ -219,43 +223,35 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.store.mostAccessedMaterials.isNotEmpty)
-                  AppText(
-                    text: 'Materiais mais acessados',
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                  ),
-                if (widget.store.mostAccessedMaterials.isNotEmpty)
-                  const SizedBox(
-                    height: 40,
-                  ),
+                AppText(
+                  text: 'Materiais mais acessados',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
                 SizedBox(
                   height: 300,
-                  child: Observer(builder: (context) {
-                    if (widget.store.mostAccessedMaterials.isEmpty) {
-                      return const SizedBox();
-                    }
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      controller: widget.store.scrollController[0],
-                      itemCount: widget.store.mostAccessedMaterials.length,
-                      itemBuilder: (context, index) {
-                        var book = widget.store.mostAccessedMaterials[index];
-                        return InkWell(
-                            hoverColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              widget.store.setSelectedBook(book);
-                              print("Book: ${book.title}");
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.store.mostAccessedMaterials.length,
+                    itemBuilder: (context, index) {
+                      var book = widget.store.mostAccessedMaterials[index];
+                      return InkWell(
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            widget.store.setSelectedBook(book);
+                            print("Book: ${book.title}");
 
-                              Modular.to.pushNamed('/home/book/${book.id}',
-                                  arguments: book);
-                            },
-                            child: BookCard(book: book));
-                      },
-                    );
-                  }),
+                            Modular.to.pushNamed('/home/book/${book.id}',
+                                arguments: book);
+                          },
+                          child: BookCard(book: book));
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -267,8 +263,6 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
             ),
           ),
         );
-
-        // return const SizedBox();
       },
     );
   }
@@ -277,8 +271,8 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
     double width = MediaQuery.of(context).size.width;
     return Observer(
       builder: (_) {
-        //mostra o loading
-        if (widget.store.loading) {
+        //mostra o loading especifico dos materiais mais bem avaliados
+        if (widget.store.isLoadingTopRatedMaterials) {
           return SizedBox(
             height: 500,
             width: width,
@@ -290,6 +284,11 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
           );
         }
 
+        // Se não está carregando e a lista está vazia, não mostra nada
+        if (widget.store.topRatedMaterials.isEmpty) {
+          return const SizedBox();
+        }
+
         return Center(
           child: Container(
             width: AppConst.maxContainerWidth,
@@ -297,43 +296,35 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.store.topRatedMaterials.isNotEmpty)
-                  AppText(
-                    text: 'Materiais mais bem avaliados',
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                  ),
-                if (widget.store.topRatedMaterials.isNotEmpty)
-                  const SizedBox(
-                    height: 40,
-                  ),
+                AppText(
+                  text: 'Materiais mais bem avaliados',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
                 SizedBox(
                   height: 300,
-                  child: Observer(builder: (context) {
-                    if (widget.store.topRatedMaterials.isEmpty) {
-                      return const SizedBox();
-                    }
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      controller: widget.store.scrollController[0],
-                      itemCount: widget.store.topRatedMaterials.length,
-                      itemBuilder: (context, index) {
-                        var book = widget.store.topRatedMaterials[index];
-                        return InkWell(
-                            hoverColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              widget.store.setSelectedBook(book);
-                              print("Book: ${book.title}");
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.store.topRatedMaterials.length,
+                    itemBuilder: (context, index) {
+                      var book = widget.store.topRatedMaterials[index];
+                      return InkWell(
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            widget.store.setSelectedBook(book);
+                            print("Book: ${book.title}");
 
-                              Modular.to.pushNamed('/home/book/${book.id}',
-                                  arguments: book);
-                            },
-                            child: BookCard(book: book));
-                      },
-                    );
-                  }),
+                            Modular.to.pushNamed('/home/book/${book.id}',
+                                arguments: book);
+                          },
+                          child: BookCard(book: book));
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -345,8 +336,6 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
             ),
           ),
         );
-
-        // return const SizedBox();
       },
     );
   }
