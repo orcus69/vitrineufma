@@ -8,6 +8,7 @@ import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:vitrine_ufma/app/core/components/vlibras_clickable_text.dart';
 import 'package:universal_platform/universal_platform.dart';
+import '../utils/nvda_helper_stub.dart' if (dart.library.html) '../utils/nvda_helper.dart';
 
 class AppText extends StatelessWidget {
   final String text;
@@ -26,6 +27,8 @@ class AppText extends StatelessWidget {
   final bool enableVLibras;
   final bool showVLibrasIcon;
   final String? vLibrasTooltip;
+  final bool enableNVDA;
+  
   const AppText({
     super.key,
     required this.text,
@@ -44,13 +47,14 @@ class AppText extends StatelessWidget {
     this.enableVLibras = true,
     this.showVLibrasIcon = false,
     this.vLibrasTooltip,
+    this.enableNVDA = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final ThemeCustom theme = Theme.of(context).extension<ThemeCustom>()!;
     
-    // Create the text style
+    // Cria o estilo do texto
     final textStyleConfig = textStyle(
         color: color ?? theme.textColor,
         overflow: TextOverflow.ellipsis,
@@ -63,7 +67,7 @@ class AppText extends StatelessWidget {
         decorationThickness: decorationThickness,
         letterSpacing: letterSpacing);
     
-    // Create the base text widget
+    // Cria o widget de texto base
     Widget textWidget = Container(
       color: Colors.transparent,
       child: EasyRichText(
@@ -95,7 +99,17 @@ class AppText extends StatelessWidget {
       ),
     );
     
-    // If VLibras is enabled and we're on web, wrap with VLibrasClickableWrapper
+    // Adiciona texto à fila do NVDA se habilitado e na web
+    if (enableNVDA && UniversalPlatform.isWeb) {
+      // Adiciona texto à fila do helper do NVDA quando o widget é construído
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (NVDAHelper.isAreaVisible) {
+          NVDAHelper.addTextToQueue(text);
+        }
+      });
+    }
+    
+    // Se o VLibras estiver habilitado e estivermos na web, envolve com VLibrasClickableWrapper
     if (enableVLibras && UniversalPlatform.isWeb) {
       return VLibrasClickableWrapper(
         textToTranslate: text,

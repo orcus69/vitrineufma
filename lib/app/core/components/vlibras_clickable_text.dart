@@ -46,17 +46,17 @@ class _VLibrasClickableTextState extends State<VLibrasClickableText> {
   }
 
   void _handleMouseEnter() {
-    // Cancel any existing timer
+    // Cancela qualquer timer existente
     _hoverTimer?.cancel();
     
-    // Start a new timer for 3 seconds
+    // Inicia um novo timer de 3 segundos
     _hoverTimer = Timer(Duration(seconds: 3), () {
       _handleHover();
     });
   }
 
   void _handleMouseExit() {
-    // Cancel the timer if mouse leaves before 3 seconds
+    // Cancela o timer se o mouse sair antes de 3 segundos
     _hoverTimer?.cancel();
   }
 
@@ -65,7 +65,7 @@ class _VLibrasClickableTextState extends State<VLibrasClickableText> {
       if (VLibrasHelper.isAvailable) {
         VLibrasHelper.activateAndTranslate(widget.text);
       } else {
-        // Se VLibras não estiver disponível, cria área de feedback
+        // Se o VLibras não estiver disponível, cria área de feedback
         VLibrasHelper.createTranslationArea(widget.text);
       }
     } catch (e) {
@@ -76,7 +76,7 @@ class _VLibrasClickableTextState extends State<VLibrasClickableText> {
   @override
   Widget build(BuildContext context) {
     if (!UniversalPlatform.isWeb) {
-      // Em plataformas não-web, retorna apenas o texto normal
+      // Em plataformas que não são web, retorna apenas o texto normal
       return Text(
         widget.text,
         style: widget.style,
@@ -86,41 +86,39 @@ class _VLibrasClickableTextState extends State<VLibrasClickableText> {
       );
     }
 
-    return Tooltip(
-      message: widget.tooltip ?? 'Passe o mouse e mantenha por 3 segundos para traduzir em Libras',
-      child: MouseRegion(
-        onEnter: (event) => _handleMouseEnter(),
-        onExit: (event) => _handleMouseExit(),
-        child: Container(
-          padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.transparent,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  widget.text,
-                  style: widget.style,
-                  textAlign: widget.textAlign,
-                  maxLines: widget.maxLines,
-                  overflow: widget.overflow,
-                ),
+    // Remove o wrapper Tooltip para eliminar a legenda que acompanha o cursor
+    return MouseRegion(
+      onEnter: (event) => _handleMouseEnter(),
+      onExit: (event) => _handleMouseExit(),
+      child: Container(
+        padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.transparent,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                widget.text,
+                style: widget.style,
+                textAlign: widget.textAlign,
+                maxLines: widget.maxLines,
+                overflow: widget.overflow,
               ),
-              if (widget.showIcon) ...[
-                SizedBox(width: 4),
-                Icon(
-                  Icons.accessibility,
-                  size: widget.iconSize,
-                  color: widget.iconColor ?? 
-                         Theme.of(context).primaryColor.withOpacity(0.7),
-                ),
-              ],
+            ),
+            if (widget.showIcon) ...[
+              SizedBox(width: 4),
+              Icon(
+                Icons.accessibility,
+                size: widget.iconSize,
+                color: widget.iconColor ?? 
+                       Theme.of(context).primaryColor.withOpacity(0.7),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -143,7 +141,7 @@ class VLibrasClickableWrapper extends StatefulWidget {
     this.padding,
     this.highlightColor,
     this.tooltip,
-    this.showFeedback = false, // Changed default to false to disable notifications
+    this.showFeedback = false, // Alterado o padrão para falso para desativar notificações
   }) : super(key: key);
 
   @override
@@ -160,17 +158,17 @@ class _VLibrasClickableWrapperState extends State<VLibrasClickableWrapper> {
   }
 
   void _handleMouseEnter(BuildContext context) {
-    // Cancel any existing timer
+    // Cancela qualquer timer existente
     _hoverTimer?.cancel();
     
-    // Start a new timer for 3 seconds
+    // Inicia um novo timer de 3 segundos
     _hoverTimer = Timer(Duration(seconds: 3), () {
       _handleHover(context);
     });
   }
 
   void _handleMouseExit() {
-    // Cancel the timer if mouse leaves before 3 seconds
+    // Cancela o timer se o mouse sair antes de 3 segundos
     _hoverTimer?.cancel();
   }
 
@@ -192,19 +190,17 @@ class _VLibrasClickableWrapperState extends State<VLibrasClickableWrapper> {
       return widget.child;
     }
 
-    return Tooltip(
-      message: widget.tooltip ?? 'Passe o mouse e mantenha por 3 segundos para traduzir em Libras',
-      child: MouseRegion(
-        onEnter: (event) => _handleMouseEnter(context),
-        onExit: (event) => _handleMouseExit(),
-        child: Container(
-          padding: widget.padding,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.transparent,
-          ),
-          child: widget.child,
+    // Remove o wrapper Tooltip para eliminar a legenda que acompanha o cursor
+    return MouseRegion(
+      onEnter: (event) => _handleMouseEnter(context),
+      onExit: (event) => _handleMouseExit(),
+      child: Container(
+        padding: widget.padding,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.transparent,
         ),
+        child: widget.child,
       ),
     );
   }

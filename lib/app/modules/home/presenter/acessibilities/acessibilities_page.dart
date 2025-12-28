@@ -11,6 +11,9 @@ import 'package:vitrine_ufma/app/core/store/auth/auth_store.dart';
 import 'package:vitrine_ufma/app/core/utils/screen_helper.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+// Import condicional do NVDA helper
+import 'package:vitrine_ufma/app/core/utils/nvda_helper_stub.dart' if (dart.library.html) 'package:vitrine_ufma/app/core/utils/nvda_helper.dart';
+
 class AcessibilitiesPage extends StatefulWidget {
   const AcessibilitiesPage({super.key});
 
@@ -23,6 +26,7 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
   late ILocalStorage storage;
   late Map boxData;
   late bool isLogged = false;
+  
   @override
   void initState() {
     super.initState();
@@ -50,6 +54,19 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
       //     ),
       //   ),
       // );
+    }
+  }
+  
+  void _toggleNVDA() {
+    if (UniversalPlatform.isWeb) {
+      // Texto de exemplo para demonstração
+      final sampleText = 'Bem-vindo à Estante Visual da Biblioteca de Pinheiro. '
+          'Esta é uma plataforma acessível que oferece recursos para usuários com deficiência visual. '
+          'Você pode navegar utilizando as setas do teclado, pressionar Enter para ativar elementos '
+          'e utilizar o leitor de tela NVDA para ouvir o conteúdo da página.';
+      
+      // Alterna a visibilidade da área de texto do NVDA
+      NVDAHelper.toggleNVDAArea(sampleText);
     }
   }
 
@@ -93,6 +110,15 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
                           'A Estante Visual da Biblioteca de Pinheiro se preocupa em oferecer uma experiência acessível e inclusiva para todos os usuários, levando em consideração suas necessidades individuais. Por isso, foram implementados recursos que tornam a plataforma mais acessível, como a possibilidade dos textos presentes na página serem lidos por leitores de tela e dicas de como melhorar a acessibilidade para os usuários.',
                       maxLines: 10,
                       fontSize: AppFontSize.fz05,
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Seção VLibras
+                    const AppText(
+                      text: 'VLibras - Tradução em Libras',
+                      fontSize: AppFontSize.fz07,
+                      fontWeight: 'bold',
+                      color: Colors.blue,
                     ),
                     const SizedBox(height: 10),
                     const AppText(
@@ -150,8 +176,61 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
                           ),
                         ),
                       ),
-                    if (UniversalPlatform.isWeb)
-                      const SizedBox(height: 15),
+                    const SizedBox(height: 25),
+                    
+                    // Seção NVDA
+                    const AppText(
+                      text: 'Leitor de Tela NVDA',
+                      fontSize: AppFontSize.fz07,
+                      fontWeight: 'bold',
+                      color: Colors.green,
+                    ),
+                    const SizedBox(height: 10),
+                    const AppText(
+                      textAlign: TextAlign.justify,
+                      text:
+                          'Já o Leitor de Tela é uma tecnologia assistiva que transforma o conteúdo visual em áudio, permitindo que pessoas com deficiência visual possam ouvir as informações apresentadas na Estante Visual. É só garantir que o Leitor de Tela esteja ativado em seu dispositivo, e ele irá identificar automaticamente o conteúdo da página, permitindo que você navegue e ouça o que está sendo exibido.',
+                      fontSize: AppFontSize.fz05,
+                      maxLines: 10,
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Caixa de texto para NVDA
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            text: '✓ Texto para NVDA',
+                            fontSize: AppFontSize.fz06,
+                            fontWeight: 'bold',
+                            color: Colors.green.shade700,
+                          ),
+                          SizedBox(height: 8),
+                          AppText(
+                            text: 'Para usar o Leitor de Tela NVDA, baixe e instale o programa em nvda-project.org. Após a instalação, ative-o usando as teclas Ctrl+Alt+N. O NVDA irá ler automaticamente o conteúdo da página.',
+                            fontSize: AppFontSize.fz05,
+                            maxLines: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    
+                    // Informações Adicionais
+                    const AppText(
+                      text: 'Informações Adicionais',
+                      fontSize: AppFontSize.fz07,
+                      fontWeight: 'bold',
+                      color: Colors.black87,
+                    ),
+                    const SizedBox(height: 10),
                     const AppText(
                       textAlign: TextAlign.justify,
                       text:
@@ -164,14 +243,6 @@ class _AcessibilitiesPageState extends State<AcessibilitiesPage> {
                       textAlign: TextAlign.justify,
                       text:
                           'Caso não consiga visualizar o ícone do VLibras, recarregue a página ou limpe o cache do navegador. O sistema funciona melhor nos navegadores Chrome, Firefox e Edge atualizados.',
-                      fontSize: AppFontSize.fz05,
-                      maxLines: 10,
-                    ),
-                    const SizedBox(height: 10),
-                    const AppText(
-                      textAlign: TextAlign.justify,
-                      text:
-                          'Já o Leitor de Tela é uma tecnologia assistiva que transforma o conteúdo visual em áudio, permitindo que pessoas com deficiência visual possam ouvir as informações apresentadas na Estante Visual. É só garantir que o Leitor de Tela esteja ativado em seu dispositivo, e ele irá identificar automaticamente o conteúdo da página, permitindo que você navegue e ouça o que está sendo exibido.',
                       fontSize: AppFontSize.fz05,
                       maxLines: 10,
                     ),

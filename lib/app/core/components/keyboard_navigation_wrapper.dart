@@ -4,7 +4,7 @@ import 'package:universal_platform/universal_platform.dart';
 import 'package:vitrine_ufma/app/core/services/keyboard_navigation_service.dart';
 import 'package:vitrine_ufma/app/core/services/focus_management_service.dart';
 
-/// Wrapper widget that handles keyboard navigation for entire pages/screens
+/// Widget wrapper que lida com a navegação por teclado para páginas telas inteiras
 class KeyboardNavigationWrapper extends StatefulWidget {
   final Widget child;
   final String pageKey;
@@ -43,7 +43,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
   }
 
   void _initializeKeyboardNavigation() {
-    // Initialize page in focus management
+    // Inicializa a página no gerenciamento de foco
     if (widget.enableFocusManagement) {
       _focusService.initializePage(widget.pageKey);
       _focusService.setCurrentPage(widget.pageKey);
@@ -53,7 +53,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
       }
     }
 
-    // Initialize keyboard service if not already done
+    // Inicializa o serviço de teclado se ainda não tiver sido feito
     _keyboardService.initialize();
   }
 
@@ -69,14 +69,14 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
   bool _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
 
-    // Handle global shortcuts if enabled
+    // Manipula atalhos globais se habilitados
     if (widget.enableGlobalShortcuts) {
       if (_keyboardService.handleKeyEvent(event)) {
         return true;
       }
     }
 
-    // Handle custom shortcuts
+    // Manipula atalhos personalizados
     if (widget.customShortcuts != null) {
       final callback = widget.customShortcuts![event.logicalKey];
       if (callback != null) {
@@ -85,7 +85,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
       }
     }
 
-    // Handle focus management shortcuts
+    // Manipula atalhos de gerenciamento de foco
     if (widget.enableFocusManagement) {
       return _handleFocusShortcuts(event);
     }
@@ -96,6 +96,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
   bool _handleFocusShortcuts(KeyEvent event) {
     final isCtrlPressed = HardwareKeyboard.instance.isControlPressed;
     final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+    final isAltPressed = HardwareKeyboard.instance.isAltPressed;
 
     switch (event.logicalKey) {
       case LogicalKeyboardKey.tab:
@@ -106,33 +107,56 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
         }
         return true;
 
+      case LogicalKeyboardKey.enter:
+        // Enter normalmente é manipulado pelo widget com foco
+        return false;
+
+      case LogicalKeyboardKey.space:
+        // Espaço normalmente é manipulado pelo widget com foco
+        return false;
+
+      case LogicalKeyboardKey.escape:
+        // Escape é manipulado pelo serviço de teclado
+        return false;
+
       case LogicalKeyboardKey.home:
         if (isCtrlPressed) {
+          // Ctrl + Home: Navega para o topo da tela
+          _focusService.focusFirst(pageKey: widget.pageKey);
+          return true;
+        } else {
+          // Home: Navega para o primeiro item
           _focusService.focusFirst(pageKey: widget.pageKey);
           return true;
         }
-        break;
 
       case LogicalKeyboardKey.end:
         if (isCtrlPressed) {
+          // Ctrl + End: Navega para o final da tela
+          _focusService.focusLast(pageKey: widget.pageKey);
+          return true;
+        } else {
+          // End: Navega para o último item
           _focusService.focusLast(pageKey: widget.pageKey);
           return true;
         }
-        break;
 
       case LogicalKeyboardKey.arrowUp:
-        if (isCtrlPressed) {
-          _focusService.focusPrevious(pageKey: widget.pageKey);
-          return true;
-        }
-        break;
-
       case LogicalKeyboardKey.arrowDown:
+      case LogicalKeyboardKey.arrowLeft:
+      case LogicalKeyboardKey.arrowRight:
+        // Teclas de seta normalmente são manipuladas por componentes específicos como listas/menus
+        // mas podemos implementar navegação de foco básica se necessário
         if (isCtrlPressed) {
-          _focusService.focusNext(pageKey: widget.pageKey);
-          return true;
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            _focusService.focusPrevious(pageKey: widget.pageKey);
+            return true;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            _focusService.focusNext(pageKey: widget.pageKey);
+            return true;
+          }
         }
-        break;
+        return false;
 
       case LogicalKeyboardKey.f1:
         _showKeyboardShortcutsHelp();
@@ -227,7 +251,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
   @override
   Widget build(BuildContext context) {
     if (!UniversalPlatform.isWeb) {
-      // On non-web platforms, just return the child
+      // Em plataformas não-web, apenas retorna o filho
       return widget.child;
     }
 
@@ -251,7 +275,7 @@ class _KeyboardNavigationWrapperState extends State<KeyboardNavigationWrapper> {
   }
 }
 
-/// Skip link widget for keyboard navigation
+/// Widget de link de pulo para navegação por teclado
 class SkipLinksWidget extends StatelessWidget {
   final List<SkipLink> skipLinks;
 
@@ -267,11 +291,11 @@ class SkipLinksWidget extends StatelessWidget {
     }
 
     return Positioned(
-      top: -100, // Initially hidden
+      top: -100, // Inicialmente oculto
       left: 10,
       child: Focus(
         onFocusChange: (hasFocus) {
-          // Show/hide skip links based on focus
+          // Mostra/oculta links de pulo com base no foco
         },
         child: Container(
           decoration: BoxDecoration(
@@ -310,7 +334,7 @@ class SkipLinksWidget extends StatelessWidget {
   }
 }
 
-/// Skip link data model
+/// Modelo de dados de link de pulo
 class SkipLink {
   final String label;
   final VoidCallback onPressed;
@@ -321,7 +345,7 @@ class SkipLink {
   });
 }
 
-/// Keyboard navigation announcement widget
+/// Widget de anúncio de navegação por teclado
 class KeyboardAnnouncementWidget extends StatelessWidget {
   final String message;
   final Duration duration;
