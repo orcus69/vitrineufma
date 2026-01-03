@@ -149,7 +149,6 @@ class InfoMaterialDatasource implements IIInfoMaterialDatasource {
       var response = result.data;
       if (result.statusCode == 200) {
         debugPrint('response $response');
-
         // Retorna a lista completa de objetos InfoMatBasicWithOutRating
         return response as List;
       }

@@ -315,23 +315,18 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
                     itemCount: widget.store.mostAccessedMaterials.length,
                     itemBuilder: (context, index) {
                       var book = widget.store.mostAccessedMaterials[index];
-                      return Semantics(
-                          button: true,
-                          label: 'Livro ${book.title}, Acessado ${book.accessCount} vezes',
-                          hint: 'Toque para ver detalhes',
-                          child: InkWell(
-                              hoverColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () {
-                                widget.store.setSelectedBook(book);
-                                print("Book: ${book.title}");
+                      return InkWell(
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            widget.store.setSelectedBook(book);
+                            print("Book: ${book.title}");
 
-                                Modular.to.pushNamed('/home/book/${book.id}',
-                                    arguments: book);
-                              },
-                              child: BookCard(book: book)),
-                      );
+                            Modular.to.pushNamed('/home/book/${book.id}',
+                                arguments: book);
+                          },
+                          child: BookCard(book: book));
                     },
                   ),
                 ),
@@ -345,7 +340,6 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
             ),
           ),
         );
-
       },
     );
   }
@@ -372,6 +366,11 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
           return const SizedBox();
         }
 
+        // Se não está carregando e a lista está vazia, não mostra nada
+        if (widget.store.topRatedMaterials.isEmpty) {
+          return const SizedBox();
+        }
+
         return Center(
           child: Container(
             width: AppConst.maxContainerWidth,
@@ -389,28 +388,23 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
                 ),
                 SizedBox(
                   height: 300,
-                   child: ListView.builder(
+                  child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.store.topRatedMaterials.length,
                     itemBuilder: (context, index) {
                       var book = widget.store.topRatedMaterials[index];
-                      return Semantics(
-                          button: true,
-                          label: 'Livro ${book.title}, Avaliação ${book.rating} estrelas',
-                          hint: 'Toque para ver detalhes',
-                          child: InkWell(
-                              hoverColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () {
-                                widget.store.setSelectedBook(book);
-                                print("Book: ${book.title}");
+                      return InkWell(
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            widget.store.setSelectedBook(book);
+                            print("Book: ${book.title}");
 
-                                Modular.to.pushNamed('/home/book/${book.id}',
-                                    arguments: book);
-                              },
-                              child: BookCard(book: book)),
-                      );
+                            Modular.to.pushNamed('/home/book/${book.id}',
+                                arguments: book);
+                          },
+                          child: BookCard(book: book));
                     },
                   ),
                 ),
@@ -424,8 +418,6 @@ class _HomeBooksPageState extends State<HomeBooksPage> {
             ),
           ),
         );
-
-
       },
     );
   }

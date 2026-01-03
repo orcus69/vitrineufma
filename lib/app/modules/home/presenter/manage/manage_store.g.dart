@@ -169,7 +169,7 @@ mixin _$ManageStore on _ManageStoreBase, Store {
         .run(() => super._loadBestRatedBooks());
   }
 
-   late final _$_loadTotalBooksCountAsyncAction =
+  late final _$_loadTotalBooksCountAsyncAction =
       AsyncAction('_ManageStoreBase._loadTotalBooksCount', context: context);
 
   @override

@@ -136,14 +136,13 @@ abstract class _HomeStoreBase with Store {
     });
   }
 
-  // BUSCA MATERIAIS MAIS ACESSADOS
+  // BUSCA MATERIS MAIS ACESSADOS
   @observable
   ObservableList mostAccessedMaterials = [].asObservable();
   @observable
   bool isLoadingMostAccessedMaterials = false;
   @action
   Future<void> getMostAccessedMaterials(int limit) async {
-  
     if (isLoadingMostAccessedMaterials) {
       debugPrint("getMostAccessedMaterials: Já está carregando, retornando...");
       return;
@@ -183,7 +182,7 @@ abstract class _HomeStoreBase with Store {
           debugPrint("getMostAccessedMaterials: Erro ao processar item: $e");
         }
       }
-
+      
       mostAccessedMaterials = mostAccessedMaterials.asObservable();
       debugPrint("getMostAccessedMaterials: Total de ${mostAccessedMaterials.length} materiais carregados");
       loading = false;
@@ -198,7 +197,6 @@ abstract class _HomeStoreBase with Store {
   bool isLoadingTopRatedMaterials = false;
   @action
   Future<void> getTopRatedMaterials(int limit) async {
-
     if (isLoadingTopRatedMaterials) {
       debugPrint("getTopRatedMaterials: Já está carregando, retornando...");
       return;
@@ -238,6 +236,7 @@ abstract class _HomeStoreBase with Store {
           debugPrint("getTopRatedMaterials: Erro ao processar item: $e");
         }
       }
+      
       topRatedMaterials = topRatedMaterials.asObservable();
       debugPrint("getTopRatedMaterials: Total de ${topRatedMaterials.length} materiais carregados");
       loading = false;

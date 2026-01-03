@@ -358,7 +358,6 @@ class _ManagePageState extends State<ManagePage> {
         // Cards de estatísticas
         Row(
           children: [
-
             Expanded(
               child: _buildStatCard(
                 "Livros Cadastrados",
@@ -390,19 +389,16 @@ class _ManagePageState extends State<ManagePage> {
         const SizedBox(height: 30),
         
         // Listas lado a lado
-
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        // Lista de mais acessados
+            // Lista de mais acessados
             Expanded(
-              flex: 3,
               child: _buildMostAccessedList(),
             ),
             const SizedBox(width: 20),
             // Lista de melhores avaliados
             Expanded(
-
               child: _buildBestRatedList(),
             ),
           ],
@@ -410,7 +406,7 @@ class _ManagePageState extends State<ManagePage> {
         
         const SizedBox(height: 30),
         
-       // Gráfico de barras dos melhores avaliados
+        // Gráfico de barras dos melhores avaliados
         _buildBestRatedChart(),
       ],
     );
@@ -481,7 +477,7 @@ class _ManagePageState extends State<ManagePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
- Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const AppText(
@@ -516,7 +512,7 @@ class _ManagePageState extends State<ManagePage> {
                       fontSize: 14,
                       color: Colors.grey,
                     ),
-                   ),
+                  ),
                 )
               : ListView.builder(
                   shrinkWrap: true,
@@ -543,7 +539,6 @@ class _ManagePageState extends State<ManagePage> {
                               color: _getRankColor(index),
                               shape: BoxShape.circle,
                             ),
-
                             child: Center(
                               child: AppText(
                                 text: '${index + 1}',
@@ -596,7 +591,6 @@ class _ManagePageState extends State<ManagePage> {
                                     fontSize: 11,
                                     color: Colors.grey[500]!,
                                   ),
- 
                                 ],
                               ],
                             ),
@@ -684,7 +678,7 @@ class _ManagePageState extends State<ManagePage> {
                       fontSize: 14,
                       color: Colors.grey,
                     ),
-                   ),
+                  ),
                 )
               : ListView.builder(
                   shrinkWrap: true,
@@ -741,12 +735,10 @@ class _ManagePageState extends State<ManagePage> {
                                       color: Colors.grey[600],
                                       size: 24,
                                     ),
-
                                   );
                                 },
                               ),
                             ),
-
                           const SizedBox(width: 15),
                           // Informações do livro
                           Expanded(
@@ -792,7 +784,7 @@ class _ManagePageState extends State<ManagePage> {
                                 ],
                               ],
                             ),
-                         ),
+                          ),
                         ],
                       ),
                     );
@@ -845,7 +837,6 @@ class _ManagePageState extends State<ManagePage> {
     });
 
     return Container(
-  
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1021,6 +1012,9 @@ class _ManagePageState extends State<ManagePage> {
                   ),                 topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
@@ -1079,7 +1073,7 @@ class _ManagePageState extends State<ManagePage> {
     );
   }
 
-    Widget _buildFilterButton(String label, String value) {
+  Widget _buildFilterButton(String label, String value) {
     final isSelected = chartFilter == value;
     
     return InkWell(

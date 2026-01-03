@@ -73,7 +73,6 @@ class Book {
       edition: json['edition'] ?? '',
       reprintUpdate: json['reprint_update'] ?? '',
       id: json['id'] ?? 0,
-      altText: json['alt_text'],
     );
   }
 

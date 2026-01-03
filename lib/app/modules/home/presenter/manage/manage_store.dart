@@ -101,7 +101,7 @@ abstract class _ManageStoreBase with Store {
     
     result.fold((l) {
       debugPrint("Error loading most accessed materials: $l");
-  }, (r) {
+    }, (r) {
       try {
         mostAccessedBooks.clear();
         bookAccessCounts.clear();
@@ -131,7 +131,7 @@ abstract class _ManageStoreBase with Store {
     result.fold((l) {
       debugPrint("Error loading top rated materials: $l");
     }, (r) async {
-       try {
+      try {
         bestRatedBooks.clear();
         bookRatings.clear();
         

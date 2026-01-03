@@ -389,7 +389,6 @@ class _RegisterMaterialPageState extends State<RegisterMaterialPage> {
                         ),
                       ),
                       // Botão Salvar
-                      
                       InkWell(
                         onTap: () async {
                           if (store.validateFields()) {
