@@ -1,9 +1,9 @@
-import 'package:vitrine_ufma/app/core/constants/const.dart';
-import 'package:vitrine_ufma/app/core/store/layout/layout_store.dart';
-import 'package:vitrine_ufma/app/modules/home/presenter/widgets/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:vitrine_ufma/app/core/constants/const.dart';
+import 'package:vitrine_ufma/app/core/store/layout/layout_store.dart';
+import 'package:vitrine_ufma/app/modules/home/presenter/widgets/side_menu.dart';
 import 'package:vitrine_ufma/app/core/theme/them_custom.dart';
 
 class HomePage extends StatefulWidget {

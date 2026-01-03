@@ -11,7 +11,7 @@ class ManageStore = _ManageStoreBase with _$ManageStore;
 
 abstract class _ManageStoreBase with Store {
   final infoMaterialUsecase = Modular.get<IInfoMaterialUsecase>();
-
+  
   @observable
   bool loading = false;
 
@@ -180,6 +180,8 @@ abstract class _ManageStoreBase with Store {
     });
   }
 
+  
+
   @action
   Future<void> _loadTotalBooksCount() async {
     final result = await infoMaterialUsecase.call();
@@ -190,4 +192,6 @@ abstract class _ManageStoreBase with Store {
       totalBooksCount = r.length;
     });
   }
+
+
 }

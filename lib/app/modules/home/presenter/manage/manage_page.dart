@@ -1009,6 +1009,8 @@ class _ManagePageState extends State<ManagePage> {
                         );
                       },
                     ),
+                  ),                 topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
                   ),
                   topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
@@ -1058,6 +1060,7 @@ class _ManagePageState extends State<ManagePage> {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                         ),
+
                       ),
                     ],
                   );

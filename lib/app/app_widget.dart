@@ -8,6 +8,8 @@ import 'package:vitrine_ufma/app/core/theme/app_theme_dark.dart';
 import 'package:vitrine_ufma/app/core/theme/app_theme_light.dart';
 import 'package:vitrine_ufma/app/core/utils/remove_scrollglow.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:vitrine_ufma/app/core/routes/vlibras_route_observer.dart';
+import 'package:vitrine_ufma/app/core/components/keyboard_navigation_wrapper.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -18,11 +20,18 @@ class AppWidget extends StatefulWidget {
 
 class _AppWidgetState extends State<AppWidget> {
   AppWidgetStore appStore = Modular.get<AppWidgetStore>();
+  final FocusNode _rootFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _rootFocusNode.dispose();
+    super.dispose();
   }
 
   double adjustScale(double devicePixelRatio) {
@@ -34,11 +43,6 @@ class _AppWidgetState extends State<AppWidget> {
     } else {
       return 1.0 - (devicePixelRatio - 1) * 0.4;
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -81,14 +85,20 @@ class _AppWidgetState extends State<AppWidget> {
                   devicePixelRatio: 1,
                   textScaler: const TextScaler.linear(1.0),
                 ),
-                child: Transform.scale(
-                  scale: 1,
-                  //  adjustScale(
-                  //   UniversalPlatform.isWeb
-                  //       ? getWebScale()
-                  //       : MediaQuery.of(context).devicePixelRatio,
-                  // ),
-                  child: child ?? const SizedBox(),
+                child: KeyboardNavigationWrapper(
+                  pageKey: 'main',
+                  child: FocusScope(
+                    autofocus: true,
+                    child: Transform.scale(
+                      scale: 1,
+                      //  adjustScale(
+                      //   UniversalPlatform.isWeb
+                      //       ? getWebScale()
+                      //       : MediaQuery.of(context).devicePixelRatio,
+                      // ),
+                      child: child ?? const SizedBox(),
+                    ),
+                  ),
                 ),
               );
             }),
